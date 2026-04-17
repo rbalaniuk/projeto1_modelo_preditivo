@@ -1,0 +1,90 @@
+[
+  {
+    "feature": "vl_dias_menos_6_horas_med_3m",
+    "mean_abs_shap": 0.5355307185423955
+  },
+  {
+    "feature": "vl_adc_not_dias_med_3m",
+    "mean_abs_shap": 0.4693283619436844
+  },
+  {
+    "feature": "vl_tempo_empresa",
+    "mean_abs_shap": 0.4274981122218675
+  },
+  {
+    "feature": "vl_falta_horas_med_6m_bin",
+    "mean_abs_shap": 0.35575622212758495
+  },
+  {
+    "feature": "vl_tempo_promocao",
+    "mean_abs_shap": 0.33960114089210447
+  },
+  {
+    "feature": "vl_horas_extras_horas_med_6m_bin",
+    "mean_abs_shap": 0.2500310157754182
+  },
+  {
+    "feature": "vl_atraso_horas_med_3m_y",
+    "mean_abs_shap": 0.21057970960605776
+  },
+  {
+    "feature": "vl_falta_horas_med_3m_y",
+    "mean_abs_shap": 0.1904507902662585
+  },
+  {
+    "feature": "vl_atraso_horas_med_6m_bin",
+    "mean_abs_shap": 0.19023463371195315
+  },
+  {
+    "feature": "qt_tempo_funcao",
+    "mean_abs_shap": 0.18467214450482847
+  },
+  {
+    "feature": "vl_tv_vol_uorg_4m",
+    "mean_abs_shap": 0.17816362215186848
+  },
+  {
+    "feature": "vl_hc_cargo_4m",
+    "mean_abs_shap": 0.15871868346547152
+  },
+  {
+    "feature": "vl_saldo_banco_horas_med_3m",
+    "mean_abs_shap": 0.15810981786971173
+  },
+  {
+    "feature": "vl_falta_dias_med_3m_y",
+    "mean_abs_shap": 0.14852045171393924
+  },
+  {
+    "feature": "vl_tv_vol_cargo_4m",
+    "mean_abs_shap": 0.13316038989304535
+  },
+  {
+    "feature": "vl_tv_inv_cargo_4m",
+    "mean_abs_shap": 0.13156750209077897
+  },
+  {
+    "feature": "vl_dias_diurno_med_6m_bin",
+    "mean_abs_shap": 0.11888234100399422
+  },
+  {
+    "feature": "vl_horas_mes_med_3m",
+    "mean_abs_shap": 0.11112747765036217
+  },
+  {
+    "feature": "vl_dependentes",
+    "mean_abs_shap": 0.09646530148499785
+  },
+  {
+    "feature": "vl_tv_inv_uorg_4m_bin",
+    "mean_abs_shap": 0.07991110367365482
+  },
+  {
+    "feature": "ds_grade",
+    "mean_abs_shap": 0.047895039747362235
+  },
+  {
+    "feature": "vl_adc_not_horas_med_3m",
+    "mean_abs_shap": 0.030702715658842573
+  }
+]

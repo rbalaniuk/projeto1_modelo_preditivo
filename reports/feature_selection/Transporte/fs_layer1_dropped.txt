@@ -1,0 +1,80 @@
+=== Transporte — Camada 1 — Features Removidas (2026-04-10 18:42)
+
+[Variância zero — 1]
+  fg_sem_output
+
+[Missing > 20% — 0]
+
+[Alta correlação (>0.85) — 69]
+  ds_genero_M
+  vl_adicional_noturno_dias_med_3m
+  vl_adicional_noturno_horas_med_3m
+  vl_adicional_noturno_horas_med_6m
+  vl_adicional_noturno_horas_med_6m_bin
+  vl_atraso_dias_med_3m_x
+  vl_atraso_dias_med_3m_y
+  vl_atraso_dias_med_6m
+  vl_atraso_horas_med_3m_y
+  vl_atraso_horas_med_6m
+  vl_atv_3m_perc_uorg_med_ult
+  vl_atv_6m_perc_equipe_med_3m
+  vl_atv_6m_perc_equipe_med_ult
+  vl_atv_6m_perc_uorg_med_3m
+  vl_atv_6m_perc_uorg_med_ult
+  vl_dias_diurno_med_3m_y
+  vl_dias_diurno_med_6m
+  vl_dias_diurno_med_6m_bin
+  vl_dias_domingo_med_3m_y
+  vl_dias_domingo_med_6m
+  vl_dias_mais_8_horas_med_3m_bin
+  vl_dias_mais_8_horas_med_6m
+  vl_dias_mais_8_horas_med_6m_bin
+  vl_dias_menos_6_horas_med_6m
+  vl_dias_menos_6_horas_med_6m_bin
+  vl_dias_mes_med_3m
+  vl_dias_noturno_med_3m_x
+  vl_dias_noturno_med_3m_y
+  vl_dias_noturno_med_6m
+  vl_dias_noturno_med_6m_bin
+  vl_dias_sabado_med_3m_y
+  vl_dias_sabado_med_3m_y_bin
+  vl_dias_sabado_med_6m
+  vl_dias_sabado_med_6m_bin
+  vl_diurno_perc
+  vl_diurno_perc_med_3m
+  vl_economico_custo_vida_bin
+  vl_economico_pib_per_capita_bin
+  vl_economico_salario_medio_bin
+  vl_economico_taxa_desemprego_bin
+  vl_economico_turnover_cnae_regiao_bin
+  vl_falta_dias_med_6m
+  vl_falta_horas_med_6m
+  vl_filhos
+  vl_hc_cargo_4m_bin
+  vl_hc_uorg_4m_bin
+  vl_headcount_equipe_med_3m
+  vl_headcount_equipe_ult
+  vl_headcount_unidade_med_3m
+  vl_headcount_unidade_ult
+  vl_horas_extras_dias_med_3m
+  vl_horas_extras_dias_med_3m_bin
+  vl_horas_extras_dias_med_6m
+  vl_horas_extras_dias_med_6m_bin
+  vl_horas_extras_extraordinarias_dias_med_3m
+  vl_horas_extras_extraordinarias_dias_med_3m_bin
+  vl_horas_extras_extraordinarias_dias_med_6m
+  vl_horas_extras_extraordinarias_dias_med_6m_bin
+  vl_horas_extras_extraordinarias_horas_med_6m
+  vl_horas_extras_horas_med_6m
+  vl_horas_extras_horas_med_6m_bin
+  vl_horas_trabalhadas_med_3m
+  vl_rv_componente2_med_3m
+  vl_rv_componente4_max_3m
+  vl_rv_componente4_med_3m
+  vl_rv_max_3m
+  vl_rv_med_3m
+  vl_rv_ult
+  vl_saldo_banco_horas_med_3m
+
+Total removidas: 70
+Restantes: 85
