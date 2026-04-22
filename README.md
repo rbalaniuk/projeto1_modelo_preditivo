@@ -100,10 +100,38 @@ cd projeto1_modelo_preditivo
 # 2. Crie o ambiente (Python 3.10+)
 pip install pandas numpy scikit-learn lightgbm xgboost shap gower matplotlib seaborn
 
-# 3. Coloque os três parquets em data/raw/
+# 3. Baixe os dados (ver seção abaixo)
 
 # 4. Execute os notebooks em ordem
 #    notebooks/01_ingest.ipynb → 02_build_dataset_m2.ipynb → ...
+```
+
+## Dados — DVC + Google Drive
+
+Os arquivos de dados (`data/`) não estão versionados diretamente no Git — o GitHub rejeita arquivos acima de 100 MB. Em vez disso, o projeto usa **DVC (Data Version Control)**: o Git armazena apenas um arquivo de ponteiro (`data.dvc`) com o hash de cada arquivo, e os dados reais ficam em uma pasta no Google Drive.
+
+**Benefício:** qualquer colaborador pode clonar o repositório e baixar exatamente a versão dos dados correspondente a cada commit.
+
+### Para baixar os dados
+
+```bash
+# Instale o DVC com suporte a Google Drive
+pip install "dvc[gdrive]"
+
+# Baixe os dados (abrirá autenticação OAuth no navegador na primeira vez)
+dvc pull
+```
+
+Os arquivos serão restaurados em `data/raw/`, `data/gold/` e `data/processed/`.
+
+### Para atualizar os dados após mudanças
+
+```bash
+dvc add data        # atualiza o ponteiro data.dvc
+dvc push            # envia os novos arquivos ao Google Drive
+git add data.dvc
+git commit -m "data: atualiza dados"
+git push
 ```
 
 ## Pipeline Detalhado
