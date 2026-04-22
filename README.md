@@ -94,8 +94,8 @@ Para executar o projeto, coloque os arquivos abaixo em `data/raw/`:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU_USUARIO/modelo-preditivo-turnover.git
-cd modelo-preditivo-turnover
+git clone https://github.com/rbalaniuk/projeto1_modelo_preditivo.git
+cd projeto1_modelo_preditivo
 
 # 2. Crie o ambiente (Python 3.10+)
 pip install pandas numpy scikit-learn lightgbm xgboost shap gower matplotlib seaborn
