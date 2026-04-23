@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════
 # Dados — só data/raw/ é versionado; o resto é gerado pelo pipeline
 # ═══════════════════════════════════════════════════════════════
-data/gold/
-data/processed/
-data/**/*.ini
+data/
+!data/raw/
+!data/raw/**
 
 # ═══════════════════════════════════════════════════════════════
 # Modelos serializados
