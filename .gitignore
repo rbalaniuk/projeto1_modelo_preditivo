@@ -1,7 +1,9 @@
 # ═══════════════════════════════════════════════════════════════
-# Dados — não versionar (pesados e/ou sensíveis)
+# Dados — só data/raw/ é versionado; o resto é gerado pelo pipeline
 # ═══════════════════════════════════════════════════════════════
-data/
+data/gold/
+data/processed/
+data/**/*.ini
 
 # ═══════════════════════════════════════════════════════════════
 # Modelos serializados
@@ -32,4 +34,8 @@ construcao_base_ficticio.ipynb
 
 # Scripts temporários de desenvolvimento
 list_all_cols.py
-/data
+
+# DVC (removido — dados raw agora estão no git)
+.dvc/
+data.dvc
+.dvcignore

@@ -80,7 +80,7 @@ O pipeline produz versões progressivas da base, cada uma com papel distinto no 
 
 ## Dados
 
-Os dados utilizados são **fictícios e descaracterizados** — gerados a partir de padrões estatísticos reais, mas sem informações identificáveis.
+Os dados utilizados são **fictícios e descaracterizados** — gerados a partir de padrões estatísticos reais, mas sem informações identificáveis. As bases de dados simulam bases que comumente estão disponíveis para o RH de empresas de médio e grande porte brasileiras.
 
 Para executar o projeto, coloque os arquivos abaixo em `data/raw/`:
 
@@ -89,6 +89,18 @@ Para executar o projeto, coloque os arquivos abaixo em `data/raw/`:
 | `input_wide_ficticio.parquet` | Features mensalizadas (1 linha = colaborador × mês) |
 | `temporal_output_ficticio.parquet` | Target de turnover voluntário (múltiplas janelas de predição) |
 | `mensalizada_ficticio.parquet` | Mensalizada completa: fonte para indicadores contextuais de grupo (headcount e taxas de turnover por cargo / uorg / gestor) |
+
+## Base mensalizada
+
+A **base mensalizada** é uma base de registros mensais de colaboradores. Ela tem como premissa que cada colaborador tenha no máximo 1 registro por mês. Ela é baseada no fechamento da folha de pagamento, então é referente ao último dia do mês. Em geral, essas bases são retiradas diretamente dos ERPs e têm informações básicas, como dados demográficos, de cargo e lotação. A essa base, podem ser acrescentadas outras informações, como de bases de ponto e de folha de pagamento. Ao trazer para esta base, a informação deve ser transformada em uma informação mensal. Por exemplo, as faltas, que vêm de bases de registros de faltas, viram a quantidade de faltas no mês.
+
+Na base fictícia também foram incluídas informações de indicadores macroeconômicos, simulando uma empresa que tem sedes em múltiplos municípios. Nesse caso, a informação dos indicadores macroeconômicos de cada município no tempo é aplicada a cada colaborador que faz parte do município no período.
+
+## Base de input
+
+A **base de inputs** é uma base que amplia o horizonte de tempoda base mensalizada. Isso é feito para fenômenos onde a informação mensal é granular demais, então são criados períodos como 3 e 6 meses. Por exemplo, a quantidade de horas extras de um colaborador em um determinado mês é muito volátil, portanto, a média dessas horas no mês presente e nos 2 anteriores (período de 3 meses) é mais relevante.
+
+Os notebooks de tratamento de dados constroem mais features deste tipo e têm funções prontas para este fim.
 
 ## Como Executar
 
@@ -100,39 +112,11 @@ cd projeto1_modelo_preditivo
 # 2. Crie o ambiente (Python 3.10+)
 pip install pandas numpy scikit-learn lightgbm xgboost shap gower matplotlib seaborn
 
-# 3. Baixe os dados (ver seção abaixo)
-
-# 4. Execute os notebooks em ordem
+# 3. Execute os notebooks em ordem
 #    notebooks/01_ingest.ipynb → 02_build_dataset_m2.ipynb → ...
 ```
 
-## Dados — DVC + Google Drive
-
-Os arquivos de dados (`data/`) não estão versionados diretamente no Git — o GitHub rejeita arquivos acima de 100 MB. Em vez disso, o projeto usa **DVC (Data Version Control)**: o Git armazena apenas um arquivo de ponteiro (`data.dvc`) com o hash de cada arquivo, e os dados reais ficam em uma pasta no Google Drive.
-
-**Benefício:** qualquer colaborador pode clonar o repositório e baixar exatamente a versão dos dados correspondente a cada commit.
-
-### Para baixar os dados
-
-```bash
-# Instale o DVC com suporte a Google Drive
-pip install "dvc[gdrive]"
-
-# Baixe os dados (abrirá autenticação OAuth no navegador na primeira vez)
-dvc pull
-```
-
-Os arquivos serão restaurados em `data/raw/`, `data/gold/` e `data/processed/`.
-
-### Para atualizar os dados após mudanças
-
-```bash
-dvc add data        # atualiza o ponteiro data.dvc
-dvc push            # envia os novos arquivos ao Google Drive
-git add data.dvc
-git commit -m "data: atualiza dados"
-git push
-```
+Os três arquivos de `data/raw/` já estão incluídos no repositório. Todos os demais arquivos intermediários (`data/gold/`, `data/processed/`) são gerados pelo pipeline ao rodar os notebooks em sequência.
 
 ## Pipeline Detalhado
 
@@ -435,7 +419,7 @@ O notebook `10_monitor` foi projetado para execução mensal, após cada ciclo d
 
 ## Autor
 
-Rafael — [LinkedIn](https://linkedin.com/in/SEU_PERFIL)
+Rafael — [LinkedIn](https://linkedin.com/in/rafael-de-melo-balaniuk-014756a3/)
 
 ---
 
