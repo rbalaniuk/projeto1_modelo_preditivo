@@ -1,11 +1,11 @@
-=== Transporte — Camada 1 — Features Removidas (2026-04-10 18:42)
+=== Transporte — Camada 1 — Features Removidas (2026-04-27 15:56)
 
 [Variância zero — 1]
   fg_sem_output
 
 [Missing > 20% — 0]
 
-[Alta correlação (>0.85) — 69]
+[Alta correlação (>0.85) — 70]
   ds_genero_M
   vl_adicional_noturno_dias_med_3m
   vl_adicional_noturno_horas_med_3m
@@ -14,8 +14,10 @@
   vl_atraso_dias_med_3m_x
   vl_atraso_dias_med_3m_y
   vl_atraso_dias_med_6m
+  vl_atraso_dias_med_6m_bin
   vl_atraso_horas_med_3m_y
   vl_atraso_horas_med_6m
+  vl_atv_3m_perc_equipe_med_ult
   vl_atv_3m_perc_uorg_med_ult
   vl_atv_6m_perc_equipe_med_3m
   vl_atv_6m_perc_equipe_med_ult
@@ -47,12 +49,11 @@
   vl_economico_salario_medio_bin
   vl_economico_taxa_desemprego_bin
   vl_economico_turnover_cnae_regiao_bin
-  vl_falta_dias_med_6m
+  vl_falta_dias_med_3m_y
   vl_falta_horas_med_6m
   vl_filhos
   vl_hc_cargo_4m_bin
   vl_hc_uorg_4m_bin
-  vl_headcount_equipe_med_3m
   vl_headcount_equipe_ult
   vl_headcount_unidade_med_3m
   vl_headcount_unidade_ult
@@ -66,7 +67,6 @@
   vl_horas_extras_extraordinarias_dias_med_6m_bin
   vl_horas_extras_extraordinarias_horas_med_6m
   vl_horas_extras_horas_med_6m
-  vl_horas_extras_horas_med_6m_bin
   vl_horas_trabalhadas_med_3m
   vl_rv_componente2_med_3m
   vl_rv_componente4_max_3m
@@ -75,6 +75,7 @@
   vl_rv_med_3m
   vl_rv_ult
   vl_saldo_banco_horas_med_3m
+  vl_tv_vol_uorg_4m_bin
 
-Total removidas: 70
+Total removidas: 71
 Restantes: 85

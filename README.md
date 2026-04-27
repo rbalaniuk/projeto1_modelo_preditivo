@@ -150,15 +150,15 @@ Dois métodos foram avaliados sobre a base de validação pura (Jun–Ago/2025, 
 | Método | Mecanismo | % Alertados (Alto) | Precision Alto | Recall Alto |
 |---|---|---:|---:|---:|
 | **M1 — Threshold fixo** | `prob >= T` (T tunado por recall ≥ 0.70) | 37–66% | 0.19–0.30 | 0.70–0.85 |
-| **M2 — Ranking** | top `ref_rate × 1.4` por mês por grupo | 18–21% | 0.30–0.39 | 0.39–0.51 |
+| **M2 — Ranking** | top `ref_rate × 1.4` por mês por grupo | 18–21% | 0.36–0.45 | 0.51–0.65 |
 
 Para o grupo Alto+Médio combinado (que é o que recebe alguma ação de RH):
 
 | Grupo | M2 Alto+Médio % | Precision A+M | Recall A+M |
 |---|---:|---:|---:|
-| Vendas | 26.8% | 0.281 | 0.502 |
-| Transporte | 28.6% | 0.265 | 0.516 |
-| Fábrica | 30.9% | 0.325 | 0.639 |
+| Vendas | 26.9% | 0.377 | 0.659 |
+| Transporte | 28.6% | 0.302 | 0.653 |
+| Fábrica | 30.9% | 0.355 | 0.768 |
 
 #### Por que o Método 1 (threshold) é melhor técnicamente
 
@@ -321,17 +321,17 @@ A camada 1 é rápida e remove lixo; a camada 2 reduz multicolinearidade e garan
 
 ---
 
-### Por que LightGBM venceu nos 3 grupos
+### Por que LightGBM venceu em 2 dos 3 grupos (Transporte usou XGBoost)
 
-Os 4 modelos avaliados foram Logistic Regression (baseline), Random Forest, XGBoost e LightGBM. O critério de seleção foi Average Precision (AP) na validação.
+Os 4 modelos avaliados foram Logistic Regression (baseline), Random Forest, XGBoost e LightGBM. O critério de seleção foi Average Precision (AP) na validação. LightGBM foi campeão em Vendas e Fábrica; XGBoost foi campeão em Transporte.
 
-LightGBM superou os demais conistentemente por algumas características do dataset:
+LightGBM superou os demais por algumas características do dataset:
 
 - **Variáveis mistas** (numéricas escaladas + ordinais `_bin` encodadas + binárias OHE): o crescimento leaf-wise do LightGBM explora bem espaços de features mistas
 - **Dados esparsas em algumas colunas** (zeros estruturais): o LightGBM lida nativamente com sparsidade via binning adaptativo
 - **Dataset de tamanho médio** (4–10K exemplos de treino por grupo): o LightGBM generaliza bem nesse regime sem requerer a regularização agressiva do XGBoost
 
-Após tuning (`06_tuning`), os modelos atingiram AP de 0.81–0.89 no OOF do treino e AUC-ROC de 0.684–0.763 na validação temporal.
+Após tuning (`06_tuning`), os modelos atingiram AP de 0.83–0.86 no OOF do treino e AUC-ROC de 0.777–0.842 na validação temporal.
 
 ---
 
@@ -341,9 +341,9 @@ Após tuning (`06_tuning`), os modelos atingiram AP de 0.81–0.89 no OOF do tre
 
 | Grupo | AUC-ROC | Precision | Recall |
 |---|---:|---:|---:|
-| Vendas | 0.807 | 0.601 | 0.784 |
-| Transporte | 0.811 | 0.602 | 0.790 |
-| Fábrica | 0.782 | 0.599 | 0.701 |
+| Vendas | 0.854 | 0.631 | 0.839 |
+| Transporte | 0.865 | 0.606 | 0.871 |
+| Fábrica | 0.817 | 0.601 | 0.755 |
 
 **Leitura:** performance no teste holdout — IDs que o modelo nunca viu no treino, mas no mesmo período histórico. Esses são os valores mais otimistas da avaliação; a queda esperada para validação temporal está documentada na seção seguinte.
 
@@ -351,19 +351,19 @@ Após tuning (`06_tuning`), os modelos atingiram AP de 0.81–0.89 no OOF do tre
 
 | Grupo | AUC-ROC | Precision A+M | Recall A+M | % Alertados (Alto+Médio) |
 |---|---:|---:|---:|---:|
-| Vendas | 0.695 | 0.281 | 0.502 | 26.8% |
-| Transporte | 0.684 | 0.265 | 0.516 | 28.6% |
-| Fábrica | 0.763 | 0.325 | 0.641 | 30.9% |
+| Vendas | 0.805 | 0.377 | 0.659 | 26.9% |
+| Transporte | 0.777 | 0.302 | 0.653 | 28.6% |
+| Fábrica | 0.842 | 0.355 | 0.768 | 30.9% |
 
-**Leitura:** para cada 10 colaboradores classificados como Alto ou Médio, 2.7–3.3 realmente são demissões voluntárias nos próximos 4 meses. O modelo captura ~50–64% das demissões reais.
+**Leitura:** para cada 10 colaboradores classificados como Alto ou Médio, 3.0–3.8 realmente são demissões voluntárias nos próximos 4 meses. O modelo captura ~65–77% das demissões reais.
 
 ### Projeção de ROI (base fictícia — simplificação; ver nota abaixo)
 
 | Cenário | Taxa de retenção | Estimativa de ROI |
 |---|---|---|
-| Conservador | 20% dos verdadeiros em risco retidos | R$ 6.2 mi |
-| Moderado | 35% dos verdadeiros em risco retidos | R$ 10.7 mi |
-| Otimista | 50% dos verdadeiros em risco retidos | R$ 15.4 mi |
+| Conservador | 20% dos verdadeiros em risco retidos | R$ 3.4 mi |
+| Moderado | 35% dos verdadeiros em risco retidos | R$ 5.9 mi |
+| Otimista | 50% dos verdadeiros em risco retidos | R$ 8.4 mi |
 
 ---
 
@@ -373,17 +373,17 @@ As features com maior importância média absoluta de SHAP, por grupo:
 
 | Rank | Vendas | Transporte | Fábrica |
 |---|---|---|---|
-| 1 | `vl_dias_menos_6_horas_med_3m` | `vl_dias_menos_6_horas_med_3m` | `vl_dias_menos_6_horas_med_3m` |
-| 2 | `vl_adc_not_dias_med_3m` | `vl_tempo_empresa` | `vl_falta_horas_med_6m_bin` |
-| 3 | `vl_tempo_empresa` | `vl_tempo_promocao` | `vl_tempo_promocao` |
-| 4 | `vl_falta_horas_med_6m_bin` | `vl_falta_horas_med_6m_bin` | `qt_tempo_funcao` |
-| 5 | `vl_tempo_promocao` | `vl_horas_extras_horas_med_3m` | `vl_horas_extras_horas_med_3m` |
+| 1 | `vl_dias_menos_6_horas_med_3m` | `vl_dias_menos_6_horas_med_3m` | `vl_horas_extras_horas_med_3m` |
+| 2 | `vl_falta_horas_med_6m_bin` | `vl_tempo_promocao` | `vl_falta_horas_med_6m_bin` |
+| 3 | `vl_atraso_horas_med_6m` | `vl_falta_horas_med_6m_bin` | `vl_dias_menos_6_horas_med_3m` |
+| 4 | `vl_tempo_empresa` | `vl_horas_extras_horas_med_3m` | `vl_falta_dias_med_6m` |
+| 5 | `vl_horas_extras_horas_med_3m` | `vl_atraso_horas_med_6m_bin` | `vl_atraso_horas_med_3m_y` |
 
 **Interpretação:**
 - `vl_dias_menos_6_horas_med_3m` — média de dias com jornada abaixo de 6h nos últimos 3 meses: consistente entre os 3 grupos como o principal sinal de desengajamento antes da saída
 - `vl_tempo_empresa` / `vl_tempo_promocao` / `qt_tempo_funcao` — variáveis de senioridade e histórico de progressao: colaboradores muito novos ou sem promoção recente têm maior risco
 - `vl_falta_horas_med_6m_bin` — padrão de faltas: indicador clássico de desengajamento, capturado pelo modelo como disicriminativo even em formato discretizado
-- `vl_adc_not_dias_med_3m` (Vendas) — diárias de adicional noturno: provavelmente captura perfis específicos de jornada que correlacionam com insatisfação
+- `vl_atraso_horas_med_6m` / `vl_atraso_horas_med_3m_y` (Vendas, Fábrica) — horas de atraso acumuladas: sinal de baixo engajamento e desalinhamento crescente com a rotina de trabalho
 
 ---
 
@@ -402,15 +402,15 @@ O notebook `10_monitor` foi projetado para execução mensal, após cada ciclo d
 2. Desvio de Precision A+M > 5pp da referência
 3. PSI ≥ 0.20 em qualquer feature top-10
 
-**Estado atual (Abril/2026):** todos os grupos apresentam alertas de PSI crítico em `vl_tempo_promocao`, `vl_tv_vol_cargo_4m` e `vl_falta_dias_med_3m_y`. A performance de modelo ainda está acima dos limiares (AUC 0.684–0.763). Recomendado retreino se o padrão persistir no próximo ciclo.
+**Estado atual (Abril/2026):** todos os grupos apresentam alertas de PSI crítico em `vl_tempo_promocao`, `vl_tv_vol_cargo_4m` e `vl_falta_dias_med_3m_y`. A performance de modelo ainda está acima dos limiares (AUC 0.777–0.842). Recomendado retreino se o padrão persistir no próximo ciclo.
 
 ---
 
 - **Python 3.10+**
 - **pandas**, **numpy** — manipulação de dados
 - **scikit-learn** — `IterativeImputer` (MICE), `RFECV`, `StandardScaler`, `StratifiedKFold`
-- **LightGBM** — modelo campeão (Vendas, Transporte, Fábrica)
-- **XGBoost** — avaliado como candidato
+- **LightGBM** — modelo campeão (Vendas, Fábrica)
+- **XGBoost** — modelo campeão (Transporte)
 - **SHAP** — interpretabilidade global e individual
 - **gower** — distância de Gower para subsampling intra-indivíduo
 - **scipy** — KS-test para drift de features

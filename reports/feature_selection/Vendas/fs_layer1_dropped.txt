@@ -1,19 +1,22 @@
-=== Vendas — Camada 1 — Features Removidas (2026-04-10 18:42)
+=== Vendas — Camada 1 — Features Removidas (2026-04-27 15:56)
 
-[Variância zero — 1]
+[Variância zero — 2]
+  fg_ativo
   fg_sem_output
 
 [Missing > 20% — 0]
 
-[Alta correlação (>0.85) — 61]
+[Alta correlação (>0.85) — 65]
   ds_genero_M
   vl_adicional_noturno_dias_med_3m
+  vl_adicional_noturno_dias_med_3m_bin
+  vl_adicional_noturno_dias_med_6m_bin
   vl_adicional_noturno_horas_med_6m
   vl_atraso_dias_med_3m_x
   vl_atraso_dias_med_3m_y
   vl_atraso_dias_med_6m
-  vl_atraso_dias_med_6m_bin
-  vl_atraso_horas_med_6m
+  vl_atraso_horas_med_3m_y
+  vl_atv_3m_perc_equipe_med_ult
   vl_atv_3m_perc_uorg_med_ult
   vl_atv_6m_perc_equipe_med_3m
   vl_atv_6m_perc_equipe_med_ult
@@ -22,6 +25,7 @@
   vl_dias_diurno_med_3m_x
   vl_dias_diurno_med_3m_y_bin
   vl_dias_diurno_med_6m
+  vl_dias_diurno_med_6m_bin
   vl_dias_domingo_med_6m
   vl_dias_mais_8_horas_med_3m_bin
   vl_dias_mais_8_horas_med_6m
@@ -39,7 +43,7 @@
   vl_economico_salario_medio_bin
   vl_economico_taxa_desemprego_bin
   vl_economico_turnover_cnae_regiao_bin
-  vl_falta_dias_med_6m
+  vl_falta_dias_med_3m_y
   vl_falta_dias_med_6m_bin
   vl_falta_horas_med_6m
   vl_filhos
@@ -67,6 +71,7 @@
   vl_rv_max_3m
   vl_rv_med_3m
   vl_rv_ult
+  vl_tv_vol_uorg_4m_bin
 
-Total removidas: 62
-Restantes: 93
+Total removidas: 67
+Restantes: 89
