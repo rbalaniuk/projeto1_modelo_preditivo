@@ -1,4 +1,4 @@
-=== Vendas — Camada 1 — Features Removidas (2026-04-27 15:56)
+=== Vendas — Camada 1 — Features Removidas (2026-04-27 18:08)
 
 [Variância zero — 2]
   fg_ativo
@@ -6,7 +6,17 @@
 
 [Missing > 20% — 0]
 
-[Alta correlação (>0.85) — 65]
+[Alta correlação (>0.85) — 72]
+  Componente Variável 11_nzero_3m
+  Componente Variável 13_nzero_3m
+  Componente Variável 3_nzero_3m
+  Componente Variável 5_nzero_3m
+  Componente Variável 6_nzero_3m
+  Componente Variável 7_nzero_3m
+  Componente Variável 8_nzero_3m
+  Componente Variável 9_nzero_3m
+  Insalubridade_nzero_3m
+  Sobreaviso_nzero_3m
   ds_genero_M
   vl_adicional_noturno_dias_med_3m
   vl_adicional_noturno_dias_med_3m_bin
@@ -19,14 +29,12 @@
   vl_atv_3m_perc_equipe_med_ult
   vl_atv_3m_perc_uorg_med_ult
   vl_atv_6m_perc_equipe_med_3m
-  vl_atv_6m_perc_equipe_med_ult
   vl_atv_6m_perc_uorg_med_3m
   vl_atv_6m_perc_uorg_med_ult
   vl_dias_diurno_med_3m_x
   vl_dias_diurno_med_3m_y_bin
   vl_dias_diurno_med_6m
   vl_dias_diurno_med_6m_bin
-  vl_dias_domingo_med_6m
   vl_dias_mais_8_horas_med_3m_bin
   vl_dias_mais_8_horas_med_6m
   vl_dias_mais_8_horas_med_6m_bin
@@ -35,9 +43,7 @@
   vl_dias_mes_med_3m
   vl_dias_noturno_med_6m
   vl_dias_sabado_med_3m_y
-  vl_dias_sabado_med_3m_y_bin
   vl_dias_sabado_med_6m
-  vl_dias_sabado_med_6m_bin
   vl_economico_custo_vida_bin
   vl_economico_pib_per_capita_bin
   vl_economico_salario_medio_bin
@@ -71,7 +77,8 @@
   vl_rv_max_3m
   vl_rv_med_3m
   vl_rv_ult
+  vl_tv_vol_cargo_4m_bin
   vl_tv_vol_uorg_4m_bin
 
-Total removidas: 67
-Restantes: 89
+Total removidas: 74
+Restantes: 91
