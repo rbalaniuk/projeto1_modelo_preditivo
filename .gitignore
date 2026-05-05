@@ -35,6 +35,11 @@ construcao_base_ficticio.ipynb
 # Scripts temporários de desenvolvimento
 list_all_cols.py
 
+# ═══════════════════════════════════════════════════════════════
+# Documentação (.md) → versionada normalmente (sem exclusão)
+# ═══════════════════════════════════════════════════════════════
+# README.md, PIPELINE_DESIGN_DOC_*.md e demais .md estão no git.
+
 # DVC (removido — dados raw agora estão no git)
 .dvc/
 data.dvc

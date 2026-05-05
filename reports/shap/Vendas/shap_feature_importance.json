@@ -1,242 +1,282 @@
 [
   {
-    "feature": "vl_dias_menos_6_horas_med_3m",
-    "mean_abs_shap": 0.48839833143414063
+    "feature": "vl_dias_menos_6_horas_max_6m_bin",
+    "mean_abs_shap": 0.33705171942710876
   },
   {
-    "feature": "vl_tempo_empresa",
-    "mean_abs_shap": 0.39015932410676163
-  },
-  {
-    "feature": "vl_falta_horas_med_6m_bin",
-    "mean_abs_shap": 0.36104219383815817
-  },
-  {
-    "feature": "vl_adc_not_dias_med_3m",
-    "mean_abs_shap": 0.32662060822173783
-  },
-  {
-    "feature": "vl_tv_vol_cargo_4m",
-    "mean_abs_shap": 0.2782100896424231
-  },
-  {
-    "feature": "vl_horas_extras_horas_med_3m",
-    "mean_abs_shap": 0.24367054352534717
-  },
-  {
-    "feature": "vl_atraso_horas_med_6m",
-    "mean_abs_shap": 0.24207518471625306
-  },
-  {
-    "feature": "vl_tempo_promocao",
-    "mean_abs_shap": 0.24077990770016064
-  },
-  {
-    "feature": "vl_falta_dias_med_6m",
-    "mean_abs_shap": 0.22588003752559196
-  },
-  {
-    "feature": "vl_tv_vol_uorg_4m",
-    "mean_abs_shap": 0.2251189994591885
-  },
-  {
-    "feature": "vl_falta_horas_med_3m_y",
-    "mean_abs_shap": 0.2053021262105439
-  },
-  {
-    "feature": "vl_rv_componente2_max_3m",
-    "mean_abs_shap": 0.17655971336659293
-  },
-  {
-    "feature": "vl_positivo_banco_horas_med_3m",
-    "mean_abs_shap": 0.17401873193249165
-  },
-  {
-    "feature": "vl_horas_extras_horas_med_6m_bin",
-    "mean_abs_shap": 0.14280022985633367
-  },
-  {
-    "feature": "qt_tempo_funcao",
-    "mean_abs_shap": 0.13658566654157395
-  },
-  {
-    "feature": "vl_tv_inv_cargo_4m",
-    "mean_abs_shap": 0.12608264516774909
-  },
-  {
-    "feature": "vl_economico_turnover_cnae_regiao",
-    "mean_abs_shap": 0.12198088485672234
-  },
-  {
-    "feature": "vl_hc_cargo_4m",
-    "mean_abs_shap": 0.12095988663047152
-  },
-  {
-    "feature": "vl_tv_inv_uorg_4m",
-    "mean_abs_shap": 0.11357323069335744
-  },
-  {
-    "feature": "vl_saldo_banco_horas_med_3m",
-    "mean_abs_shap": 0.10936065532216492
-  },
-  {
-    "feature": "vl_distancia_km",
-    "mean_abs_shap": 0.10868434934844144
-  },
-  {
-    "feature": "vl_tv_vol_gestor_4m",
-    "mean_abs_shap": 0.10533641957038013
-  },
-  {
-    "feature": "vl_horas_extras_extraordinarias_horas_med_3m",
-    "mean_abs_shap": 0.10109069575209739
+    "feature": "vl_remuneracao_variavel_max_3m",
+    "mean_abs_shap": 0.3318689167499542
   },
   {
     "feature": "vl_idade",
-    "mean_abs_shap": 0.10063084343511422
+    "mean_abs_shap": 0.29719430208206177
   },
   {
-    "feature": "vl_salario",
-    "mean_abs_shap": 0.10048841541286344
+    "feature": "vl_filhos",
+    "mean_abs_shap": 0.19575321674346924
   },
   {
-    "feature": "vl_dias_mais_8_horas_med_3m",
-    "mean_abs_shap": 0.0987185396192076
+    "feature": "vl_dias_menos_6_horas",
+    "mean_abs_shap": 0.16646410524845123
   },
   {
-    "feature": "vl_adicional_noturno_dias_med_6m",
-    "mean_abs_shap": 0.09827478701586742
+    "feature": "vl_tempo_empresa",
+    "mean_abs_shap": 0.13777101039886475
   },
   {
-    "feature": "vl_hc_uorg_4m",
-    "mean_abs_shap": 0.0971075338938797
+    "feature": "vl_remuneracao_variavel_std_3m_bin",
+    "mean_abs_shap": 0.1377168446779251
   },
   {
-    "feature": "vl_atv_6m_perc_equipe_med_ult",
-    "mean_abs_shap": 0.09264184408806493
+    "feature": "vl_horas_extras_extraordinarias_horas",
+    "mean_abs_shap": 0.13186195492744446
   },
   {
-    "feature": "vl_horas_mes_med_3m",
-    "mean_abs_shap": 0.09103846371396881
+    "feature": "vl_distancia_trabalho_min_max_6m",
+    "mean_abs_shap": 0.12641477584838867
   },
   {
-    "feature": "vl_horas_trabalhadas_med_6m",
-    "mean_abs_shap": 0.07999485220072157
+    "feature": "vl_horas_trabalhadas_std_3m",
+    "mean_abs_shap": 0.11960114538669586
   },
   {
-    "feature": "vl_economico_custo_vida",
-    "mean_abs_shap": 0.0786094667530673
+    "feature": "vl_adicional_noturno_dias_min_6m",
+    "mean_abs_shap": 0.10836243629455566
   },
   {
-    "feature": "vl_banco_horas_pagamento_med_3m",
-    "mean_abs_shap": 0.07321969989624671
+    "feature": "vl_tempo_empresa_std_6m",
+    "mean_abs_shap": 0.10406118631362915
   },
   {
-    "feature": "vl_adicional_noturno_horas_med_3m",
-    "mean_abs_shap": 0.06847640714575771
+    "feature": "vl_abs_dias_sum_3m_mean_6m",
+    "mean_abs_shap": 0.09822521358728409
   },
   {
-    "feature": "vl_atraso_dias_med_3m_y_bin",
-    "mean_abs_shap": 0.06832369768645011
+    "feature": "vl_economico_salario_medio_std_6m",
+    "mean_abs_shap": 0.08964730054140091
   },
   {
-    "feature": "vl_hc_gestor_4m",
-    "mean_abs_shap": 0.06158774168683181
-  },
-  {
-    "feature": "vl_economico_salario_medio",
-    "mean_abs_shap": 0.06093122913870074
-  },
-  {
-    "feature": "vl_atv_3m_perc_uorg_med_3m",
-    "mean_abs_shap": 0.060020766400099665
-  },
-  {
-    "feature": "vl_economico_taxa_desemprego",
-    "mean_abs_shap": 0.058299848095337045
-  },
-  {
-    "feature": "vl_falta_horas_med_3m_x",
-    "mean_abs_shap": 0.05566400237928452
-  },
-  {
-    "feature": "vl_abs_dias_sum_12m",
-    "mean_abs_shap": 0.054759140195119585
-  },
-  {
-    "feature": "vl_dias_diurno_med_3m_y",
-    "mean_abs_shap": 0.053217667785808484
-  },
-  {
-    "feature": "vl_economico_pib_per_capita",
-    "mean_abs_shap": 0.052147904793921465
-  },
-  {
-    "feature": "vl_atv_3m_perc_equipe_med_3m",
-    "mean_abs_shap": 0.0521101494129627
-  },
-  {
-    "feature": "vl_cid_infecto_dias_sum_3m",
-    "mean_abs_shap": 0.05104977109358065
-  },
-  {
-    "feature": "vl_abs_dias_sum_6m",
-    "mean_abs_shap": 0.0507852755355176
+    "feature": "vl_beneficio_extra_2_min_6m",
+    "mean_abs_shap": 0.08718489855527878
   },
   {
     "feature": "vl_dependentes",
-    "mean_abs_shap": 0.050061644277392674
+    "mean_abs_shap": 0.08576450496912003
   },
   {
-    "feature": "vl_falta_dias_med_3m_x",
-    "mean_abs_shap": 0.04585691798841531
+    "feature": "vl_horas_extras_horas",
+    "mean_abs_shap": 0.08502316474914551
   },
   {
-    "feature": "vl_abs_dias_sum_3m",
-    "mean_abs_shap": 0.032058477782522084
+    "feature": "vl_beneficio_extra_5_max_6m",
+    "mean_abs_shap": 0.07624208182096481
   },
   {
-    "feature": "vl_atraso_dias_med_6m_bin",
-    "mean_abs_shap": 0.030934796531982958
+    "feature": "vl_beneficio_extra_4_max_6m",
+    "mean_abs_shap": 0.07292015850543976
   },
   {
-    "feature": "ds_genero_F",
-    "mean_abs_shap": 0.02983948672773937
+    "feature": "vl_tv_vol_uorg_4m",
+    "mean_abs_shap": 0.07174304127693176
   },
   {
-    "feature": "vl_dias_sabado_med_3m_x",
-    "mean_abs_shap": 0.024086948281793977
+    "feature": "vl_adicional_noturno_horas",
+    "mean_abs_shap": 0.07129201292991638
   },
   {
-    "feature": "vl_atraso_horas_med_3m_x",
-    "mean_abs_shap": 0.020494971968965853
+    "feature": "vl_economico_salario_medio_std_3m",
+    "mean_abs_shap": 0.07099174708127975
   },
   {
-    "feature": "vl_dias_noturno_med_3m_y",
-    "mean_abs_shap": 0.01904507442578142
+    "feature": "vl_economico_taxa_desemprego_std_3m",
+    "mean_abs_shap": 0.07071884721517563
   },
   {
-    "feature": "vl_diurno_perc",
-    "mean_abs_shap": 0.018273770621073607
+    "feature": "vl_economico_custo_vida_std_6m",
+    "mean_abs_shap": 0.06797739863395691
   },
   {
-    "feature": "vl_abs_cid_diversos_dias_sum_6m",
-    "mean_abs_shap": 0.011807612765523784
+    "feature": "vl_atraso_horas_max_6m",
+    "mean_abs_shap": 0.0674508735537529
   },
   {
-    "feature": "vl_falta_dias_med_3m_y_bin",
-    "mean_abs_shap": 0.008031549186119017
+    "feature": "vl_economico_turnover_cnae_regiao_std_6m",
+    "mean_abs_shap": 0.06499462574720383
   },
   {
-    "feature": "ds_grade",
-    "mean_abs_shap": 0.007556355879817442
+    "feature": "vl_falta_dias",
+    "mean_abs_shap": 0.06382754445075989
   },
   {
-    "feature": "ds_etnia_agrupado_Não declarado",
-    "mean_abs_shap": 0.004351388367102206
+    "feature": "vl_dias_mais_8_horas",
+    "mean_abs_shap": 0.06085289642214775
   },
   {
-    "feature": "vl_dias_domingo_med_3m_x",
-    "mean_abs_shap": 0.0005258776375529121
+    "feature": "vl_beneficio_tempo_2_std_6m",
+    "mean_abs_shap": 0.05964558571577072
+  },
+  {
+    "feature": "vl_horas_trabalhadas_min_3m",
+    "mean_abs_shap": 0.05934622511267662
+  },
+  {
+    "feature": "vl_horas_extras_extraordinarias_horas_std_6m",
+    "mean_abs_shap": 0.05837306007742882
+  },
+  {
+    "feature": "vl_abs_dias_sum_3m_std_6m_bin",
+    "mean_abs_shap": 0.0573006235063076
+  },
+  {
+    "feature": "vl_tv_vol_cargo_4m",
+    "mean_abs_shap": 0.056073687970638275
+  },
+  {
+    "feature": "vl_dias_sabado",
+    "mean_abs_shap": 0.055873457342386246
+  },
+  {
+    "feature": "vl_adicional_noturno_dias",
+    "mean_abs_shap": 0.054007772356271744
+  },
+  {
+    "feature": "vl_economico_turnover_cnae_regiao",
+    "mean_abs_shap": 0.05388547480106354
+  },
+  {
+    "feature": "vl_hc_uorg_4m",
+    "mean_abs_shap": 0.05340047553181648
+  },
+  {
+    "feature": "vl_tempo_funcao_std_6m",
+    "mean_abs_shap": 0.053362127393484116
+  },
+  {
+    "feature": "vl_hc_cargo_4m",
+    "mean_abs_shap": 0.05253368988633156
+  },
+  {
+    "feature": "vl_beneficio_extra_10_max_6m",
+    "mean_abs_shap": 0.05231684818863869
+  },
+  {
+    "feature": "vl_salario_std_6m",
+    "mean_abs_shap": 0.05128874629735947
+  },
+  {
+    "feature": "vl_tv_vol_gestor_4m",
+    "mean_abs_shap": 0.04920859634876251
+  },
+  {
+    "feature": "vl_economico_custo_vida_min_3m",
+    "mean_abs_shap": 0.047905176877975464
+  },
+  {
+    "feature": "vl_beneficio_extra_3_max_6m",
+    "mean_abs_shap": 0.0475192591547966
+  },
+  {
+    "feature": "vl_distancia_trabalho_min_std_6m",
+    "mean_abs_shap": 0.04736911132931709
+  },
+  {
+    "feature": "vl_beneficio_extra_12_max_6m",
+    "mean_abs_shap": 0.04625397175550461
+  },
+  {
+    "feature": "vl_beneficio_extra_12_max_3m",
+    "mean_abs_shap": 0.04529032111167908
+  },
+  {
+    "feature": "vl_adicional_noturno_horas_mean_6m",
+    "mean_abs_shap": 0.04414350539445877
+  },
+  {
+    "feature": "vl_economico_taxa_desemprego",
+    "mean_abs_shap": 0.04219256713986397
+  },
+  {
+    "feature": "vl_beneficio_tempo_2_max_6m_bin",
+    "mean_abs_shap": 0.0416034571826458
+  },
+  {
+    "feature": "vl_atraso_horas",
+    "mean_abs_shap": 0.04046186804771423
+  },
+  {
+    "feature": "vl_tv_inv_cargo_4m",
+    "mean_abs_shap": 0.0402873232960701
+  },
+  {
+    "feature": "vl_atraso_dias",
+    "mean_abs_shap": 0.03869004175066948
+  },
+  {
+    "feature": "vl_economico_pib_per_capita_std_3m",
+    "mean_abs_shap": 0.03734079375863075
+  },
+  {
+    "feature": "vl_falta_dias_max_6m_bin",
+    "mean_abs_shap": 0.036044806241989136
+  },
+  {
+    "feature": "vl_beneficio_extra_2_std_3m",
+    "mean_abs_shap": 0.03476507216691971
+  },
+  {
+    "feature": "vl_beneficio_extra_1_std_6m",
+    "mean_abs_shap": 0.03322397544980049
+  },
+  {
+    "feature": "vl_beneficio_extra_13_max_6m",
+    "mean_abs_shap": 0.03201659768819809
+  },
+  {
+    "feature": "vl_atraso_dias_max_3m",
+    "mean_abs_shap": 0.03027469292283058
+  },
+  {
+    "feature": "vl_horas_extras_horas_max_3m",
+    "mean_abs_shap": 0.0282617025077343
+  },
+  {
+    "feature": "vl_abs_dias_sum_6m_std_6m",
+    "mean_abs_shap": 0.02816055715084076
+  },
+  {
+    "feature": "vl_abs_dias_sum_12m_std_6m",
+    "mean_abs_shap": 0.02570408396422863
+  },
+  {
+    "feature": "vl_abs_dias_sum_6m_mean_6m",
+    "mean_abs_shap": 0.023876897990703583
+  },
+  {
+    "feature": "vl_beneficio_extra_10_mean_6m",
+    "mean_abs_shap": 0.020707998424768448
+  },
+  {
+    "feature": "vl_economico_pib_per_capita_std_6m",
+    "mean_abs_shap": 0.01824459247291088
+  },
+  {
+    "feature": "vl_tv_inv_uorg_4m",
+    "mean_abs_shap": 0.014399346895515919
+  },
+  {
+    "feature": "vl_beneficio_tempo_1_max_6m_bin",
+    "mean_abs_shap": 0.01355129573494196
+  },
+  {
+    "feature": "vl_dias_mais_8_horas_min_6m_bin",
+    "mean_abs_shap": 0.010300853289663792
+  },
+  {
+    "feature": "ds_pcd_detalhe_Não",
+    "mean_abs_shap": 0.009282615035772324
+  },
+  {
+    "feature": "vl_beneficio_tempo_1_min_3m_bin",
+    "mean_abs_shap": 0.007991112768650055
   }
 ]

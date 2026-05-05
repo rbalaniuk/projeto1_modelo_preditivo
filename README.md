@@ -1,6 +1,8 @@
 # Modelo Preditivo de Turnover Voluntário
 
-Modelo de machine learning para predição de turnover voluntário em empresas de grande porte, utilizando dados mensalizados de RH e indicadores econômicos.
+Modelo de machine learning para predição de turnover voluntário em empresas de grande porte, construído **inteiramente a partir de uma única base de dados** — a mensalizada de RH, onde cada colaborador aparece uma vez por mês.
+
+> **O diferencial técnico central deste projeto:** a base de entrada é uma tabela simples e universal — um registro por colaborador por mês — e o pipeline se encarrega de construir automaticamente o target de turnover, as features de comportamento em múltiplos horizontes temporais (3m e 6m), os indicadores contextuais por equipe/gestor/cargo e toda a infraestrutura de modelagem. Não é necessária nenhuma base adicional de features pré-processadas ou de targets pré-calculados. Qualquer empresa que tenha uma mensalizada básica exportada do ERP pode executar o pipeline completo.
 
 ## Problema de Negócio
 
@@ -16,18 +18,22 @@ Este projeto foi estruturado para garantir uma avaliação honesta: treino, test
 
 ## Abordagem Técnica
 
+- **Base única de entrada:** toda a lógica parte da mensalizada — uma tabela com 1 linha por colaborador por mês. O pipeline constrói o target e as features automaticamente, sem necessidade de bases auxiliares pré-processadas
+- **Construção automática do target:** janelas forward-looking de 3 a 12 meses são derivadas diretamente das flags `fg_dem_vol` e `fg_dem_inv` da mensalizada (IMPL-9b), com tratamento correto de NaN para saídas involuntárias e janelas truncadas
+- **Rolling features por colaborador:** para todas as variáveis `vl_*`, são geradas agregações de média, mínimo, máximo e desvio padrão em janelas de 3 e 6 meses — usando groupby+rolling vetorizado, sem loops Python por coluna
 - **Janela deslizante (Modelo 2):** cada linha do dataset representa o estado de um colaborador em um mês; o target olha 4 meses à frente — suficiente para um ciclo completo de retenção
 - **Arquitetura multi-grupo:** modelos independentes para Vendas, Transporte e Fábrica — cada grupo tem seus próprios encoders, splits, feature selection, modelo e critério de classificação de risco
-- **Feature engineering:** indicadores contextuais de grupo (headcount e taxas de turnover por cargo/uorg/gestor via rolling 4m), discretização quintílica não-paramétrica, correção de lag para variáveis de ponto (15/15)
+- **Indicadores contextuais de grupo:** headcount e taxas de turnover por cargo/uorg/gestor via rolling 4m, calculados sobre a população completa — sem lookahead
 - **Representação de desligados:** medoide dos K=4 registros mais recentes (registro real mais central, sem síntese) — um desligado = 1 linha no treino
+- **Espaço de distância para medoide e subsampling:** reduzido de ~814 para ~200 features antes do cálculo (remove pares redundantes contínua/`_bin`, near-zero variance e features sem correlação com o target) — a redução ocorre exclusivamente no cálculo de distância interno, sem afetar o conjunto de features que chega ao modelo
 - **Classificação de risco operacional:** ranking percentual por mês por grupo (proporcional à taxa histórica de turnover), não threshold fixo
-- **Pipeline completo:** ingestão → feature engineering → splits → feature selection → modelagem → tuning → SHAP → score → ROI → monitoramento (10 notebooks)
+- **Pipeline completo:** ingestão → construção de target e features → feature engineering → splits → feature selection → modelagem → tuning → SHAP → score → ROI → monitoramento (10 notebooks)
 
 ## Estrutura do Projeto
 
 ```
 ├── notebooks/
-│   ├── 01_ingest.ipynb              # Integração das 3 bases + rolling stats de grupo
+│   ├── 01_ingest.ipynb              # Carga da mensalizada → target (3-12m) → rolling vl_* (3m/6m) → indicadores de grupo → bases gold
 │   ├── 02_build_dataset_m2.ipynb    # Feature engineering + binning + MICE (fit em base_tt)
 │   ├── 03_splits.ipynb              # Medoide, Gower, split por ID, StandardScaler
 │   ├── 04_feature_selection.ipynb   # Seleção de features em 3 camadas, por grupo
@@ -39,7 +45,7 @@ Este projeto foi estruturado para garantir uma avaliação honesta: treino, test
 │   └── 10_monitor.ipynb             # PSI, performance mensal, alertas de retreino
 │
 ├── data/                            # ⛔ Não versionado (.gitignore)
-│   ├── raw/                         # Bases de entrada (.parquet)
+│   ├── raw/                         # mensalizada_ficticio.parquet (única base de entrada)
 │   ├── gold/                        # base_tt_raw · base_val_raw · base_apl_raw
 │   │                                # base_features_tt · base_features_val · base_features_apl
 │   └── processed/
@@ -72,35 +78,132 @@ O pipeline produz versões progressivas da base, cada uma com papel distinto no 
 
 | Camada | Arquivo(s) | Produzido em | Descrição |
 |---|---|---|---|
-| **1 · Entrada** | `data/raw/*.parquet` | — | 3 bases brutas: wide de features, target temporal, mensalizada |
-| **2 · Bases raw** | `data/gold/base_{tt,val,apl}_raw.parquet` | `01_ingest` | Após merge + rolling stats + separação temporal (tt/val/apl) |
-| **3 · Features** | `data/gold/base_features_{tt,val,apl}.parquet` | `02_build` | Binning quintílico + OHE + MICE fit em base_tt; transform-only em val/apl |
-| **4 · Splits** | `data/processed/splits/{Grupo}/` | `03_splits` | Medoide + Gower + split por ID + StandardScaler — treino/teste/val por grupo |
-| **5 · Score** | `reports/score_risco_{Grupo}.parquet` | `08_score` | Probabilidade + score_risco + grupo_risco para cada colaborador × mês |
+| **0 · Entrada** | `data/raw/mensalizada_ficticio.parquet` | — | **Base única** — 1 linha por colaborador × mês; contém flags de demissão, variáveis `vl_*` e metadados |
+| **1 · Bases raw** | `data/gold/base_{tt,val,apl}_raw.parquet` | `01_ingest` | Após construção do target (3–12m) + rolling features (3m/6m) + indicadores de grupo + separação temporal |
+| **2 · Features** | `data/gold/base_features_{tt,val,apl}.parquet` | `02_build` | Binning quintílico + OHE + MICE fit em base_tt; transform-only em val/apl |
+| **3 · Splits** | `data/processed/splits/{Grupo}/` | `03_splits` | Medoide + Gower + split por ID + StandardScaler — treino/teste/val por grupo |
+| **4 · Score** | `reports/score_risco_{Grupo}.parquet` | `08_score` | Probabilidade + score_risco + grupo_risco para cada colaborador × mês |
 
 ## Dados
 
 Os dados utilizados são **fictícios e descaracterizados** — gerados a partir de padrões estatísticos reais, mas sem informações identificáveis. As bases de dados simulam bases que comumente estão disponíveis para o RH de empresas de médio e grande porte brasileiras.
 
-Para executar o projeto, coloque os arquivos abaixo em `data/raw/`:
+Para executar o projeto, coloque o arquivo abaixo em `data/raw/`:
 
 | Arquivo | Descrição |
 |---|---|
-| `input_wide_ficticio.parquet` | Features mensalizadas (1 linha = colaborador × mês) |
-| `temporal_output_ficticio.parquet` | Target de turnover voluntário (múltiplas janelas de predição) |
-| `mensalizada_ficticio.parquet` | Mensalizada completa: fonte para indicadores contextuais de grupo (headcount e taxas de turnover por cargo / uorg / gestor) |
+| `mensalizada_ficticio.parquet` | **Única base de entrada** — 1 linha por colaborador × mês |
 
-## Base mensalizada
+O arquivo já está incluído no repositório. Todos os demais arquivos intermediários (`data/gold/`, `data/processed/`) são gerados pelo pipeline ao rodar os notebooks em sequência.
 
-A **base mensalizada** é uma base de registros mensais de colaboradores. Ela tem como premissa que cada colaborador tenha no máximo 1 registro por mês. Ela é baseada no fechamento da folha de pagamento, então é referente ao último dia do mês. Em geral, essas bases são retiradas diretamente dos ERPs e têm informações básicas, como dados demográficos, de cargo e lotação. A essa base, podem ser acrescentadas outras informações, como de bases de ponto e de folha de pagamento. Ao trazer para esta base, a informação deve ser transformada em uma informação mensal. Por exemplo, as faltas, que vêm de bases de registros de faltas, viram a quantidade de faltas no mês.
+## A mensalizada como base única
 
-Na base fictícia também foram incluídas informações de indicadores macroeconômicos, simulando uma empresa que tem sedes em múltiplos municípios. Nesse caso, a informação dos indicadores macroeconômicos de cada município no tempo é aplicada a cada colaborador que faz parte do município no período.
+A **mensalizada** é a única entrada do pipeline. Trata-se de uma tabela simples onde cada linha representa um colaborador em um mês — exatamente o formato que qualquer empresa obtém ao exportar a folha de pagamento do ERP.
 
-## Base de input
+A partir dessa tabela, o notebook `01_ingest` constrói automaticamente:
+- **Target de turnover** para janelas de 3 a 12 meses à frente
+- **Rolling features** (média, mínimo, máximo, desvio padrão) em janelas de 3 e 6 meses para todas as variáveis `vl_*`
+- **Features derivadas** como percentual de dias diurnos e percentual de dias com horas extras
+- **Indicadores contextuais de grupo** (headcount e taxas de turnover por cargo/uorg/gestor), calculados sobre a população completa com janela rolling de 4 meses
 
-A **base de inputs** é uma base que amplia o horizonte de tempoda base mensalizada. Isso é feito para fenômenos onde a informação mensal é granular demais, então são criados períodos como 3 e 6 meses. Por exemplo, a quantidade de horas extras de um colaborador em um determinado mês é muito volátil, portanto, a média dessas horas no mês presente e nos 2 anteriores (período de 3 meses) é mais relevante.
+Nenhuma base adicional, nenhum script de construção de features externo, nenhum arquivo de target pré-calculado é necessário.
 
-Os notebooks de tratamento de dados constroem mais features deste tipo e têm funções prontas para este fim.
+---
+
+## Premissas e Requisitos da Base de Dados
+
+Esta seção descreve o contrato de dados que a mensalizada precisa satisfazer para que o pipeline seja executado sem ajustes. O objetivo é que qualquer pessoa com acesso a um ERP de RH consiga montar a base no formato correto.
+
+### Premissa fundamental
+
+> **Cada colaborador aparece exatamente uma vez por mês.** Não pode haver linhas duplicadas para o mesmo `id_colaborador` × `dt_mes_ano`. Meses sem registro (ex.: afastamento longo) devem ser preenchidos ou omitidos — o pipeline não consolida dados intra-mês.
+
+### Convenção de nomes de colunas
+
+O pipeline usa os **prefixos de coluna como sinalização automática** para determinar o tratamento de cada variável ao longo do pipeline (rolling, binning, OHE, scaler, etc.):
+
+| Prefixo | Tipo de dado | Papel no pipeline |
+|---|---|---|
+| `vl_` | `float` / `int` | Variáveis numéricas mensais → usadas em rolling features (3m e 6m), binning quintílico e normalização. Colunas com sufixo `_Xm` (ex.: `_3m`, `_4m`, `_6m`, `_12m`) já representam agregações pré-calculadas sobre uma janela temporal e **não** recebem rolling adicional — o pipeline detecta o sufixo e preserva o valor como está |
+| `ds_` | `str` / `object` | Variáveis categóricas → usadas em OHE (≤ 5 categorias) ou como base para indicadores contextuais de grupo |
+| `fg_` | `0` / `1` | Flags binárias → demissão, afastamento, status ativo |
+| `id_` | `str` / `int` | Identificadores → não usados como feature |
+| `dt_` | `date` | Datas → usadas apenas para ordenação temporal e construção de rolling |
+
+> ⚠️ **Colunas fora dessas convenções não são processadas automaticamente.** Se você adicionar uma variável sem prefixo reconhecido, ela será ignorada pelo pipeline de feature engineering.
+
+### Colunas obrigatórias
+
+| Coluna | Tipo | Regra | Descrição |
+|---|---|---|---|
+| `id_colaborador` | `str` / `int` | Único por mês | Identificador do colaborador — não pode se repetir no mesmo mês |
+| `dt_mes_ano` | `date` | Um por colaborador × mês | Mês de referência (ex.: `2024-01-01` para janeiro/2024) |
+| `fg_dem_vol` | `0` / `1` | Exatamente 1 no mês da saída | `1` no mês em que o colaborador pediu demissão; `0` nos demais |
+| `fg_dem_inv` | `0` / `1` | Exatamente 1 no mês da saída | `1` no mês em que o colaborador foi demitido; `0` nos demais |
+| `fg_ativo` | `0` / `1` | `1` enquanto ativo | `0` a partir do mês de saída (inclusive) |
+| `ds_grupo` | `str` | Sem nulos | Grupo operacional do colaborador (ex.: `"Vendas"`, `"Fábrica"`, `"Transporte"`) — define a partição de cada modelo |
+| `ds_cargo` | `str` | Sem nulos | Cargo do colaborador — usado para calcular indicadores contextuais de grupo (taxa de turnover por cargo) |
+| `ds_uorg` | `str` | Sem nulos | Unidade organizacional / setor — usado nos indicadores contextuais de grupo |
+| `ds_gestor` | `str` | Sem nulos | Identificador do gestor direto — usado nos indicadores contextuais de grupo |
+
+### Colunas opcionais (features)
+
+Além das obrigatórias, inclua todas as variáveis mensais que possam ser preditoras do turnover. O pipeline as trata automaticamente via prefixo:
+
+**Numéricas (`vl_`):**
+Qualquer métrica mensal por colaborador — salário, horas extras, faltas, atrasos, avaliações de desempenho, etc.
+
+| Exemplo | Descrição |
+|---|---|
+| `vl_salario` | Salário bruto do mês |
+| `vl_horas_extras` | Total de horas extras no mês |
+| `vl_faltas` | Dias de falta no mês |
+| `vl_atrasos` | Minutos de atraso no mês |
+| `vl_nota_avaliacao` | Nota de avaliação de desempenho mais recente |
+
+> **Variáveis com horizonte temporal já embutido (sufixo `_Xm`):** se a variável já representa um agregado sobre uma janela de tempo — por exemplo `vl_abs_dias_sum_3m` (soma de faltas nos últimos 3 meses) ou `vl_horas_extras_mean_6m` (média de horas extras nos últimos 6 meses) — use o sufixo `_3m`, `_4m`, `_6m`, `_12m` etc. no nome da coluna. O pipeline detecta esse padrão automaticamente e **não aplica rolling adicional** sobre essas colunas, evitando dupla-agregação. Elas entram diretamente nas etapas de binning e normalização com o valor mensal tal como está na base.
+
+**Categóricas (`ds_`):**
+Variáveis categóricas com baixa cardinalidade (≤ 5 valores distintos) são transformadas em OHE pelo pipeline. Variáveis com alta cardinalidade (> 5 valores) são descartadas — a informação delas é capturada pelos indicadores contextuais de `ds_cargo`, `ds_uorg` e `ds_gestor`.
+
+| Exemplo | Descrição |
+|---|---|
+| `ds_faixa_salarial` | Faixa de salário (ex.: `"A"`, `"B"`, `"C"`) |
+| `ds_turno` | Turno de trabalho (ex.: `"Dia"`, `"Noite"`, `"Misto"`) |
+| `ds_tipo_contrato` | Tipo de vínculo (ex.: `"CLT"`, `"Temporário"`) |
+
+### Restrições adicionais
+
+- **Período mínimo:** o pipeline usa janelas rolling de até 6 meses e seleciona colaboradores com ≥ 90 dias de empresa. Para ter volume suficiente de positivos no treino, a base deve cobrir pelo menos **18 meses de histórico**.
+- **Volume mínimo por grupo:** recomendado no mínimo **500 colaboradores ativos por grupo** no período de treino. Grupos com N < 500 podem ter modelo instável.
+- **Saídas involuntárias:** devem estar corretamente classificadas em `fg_dem_inv` para que o pipeline as trate como NaN no target (não como 0), evitando contaminação do sinal de saída voluntária.
+- **Meses futuros sem target:** os meses em que a janela de predição (4m) extrapola o fim da base receberão `fg_sem_output = 1` automaticamente e não serão usados no treino nem na validação.
+- **Nulos em `vl_*`:** são tolerados — o pipeline imputa pela mediana calculada no treino. Evitar, porém, colunas com > 20% de nulos, pois são descartadas na feature selection.
+
+### Como saber se sua base está no formato correto
+
+Antes de rodar `01_ingest`, verifique:
+
+```python
+import pandas as pd
+df = pd.read_parquet("data/raw/sua_mensalizada.parquet")
+
+# 1. Sem duplicatas por colaborador × mês
+assert df.duplicated(["id_colaborador", "dt_mes_ano"]).sum() == 0
+
+# 2. Colunas obrigatórias presentes
+obrigatorias = ["id_colaborador", "dt_mes_ano", "fg_dem_vol", "fg_dem_inv",
+                "fg_ativo", "ds_grupo", "ds_cargo", "ds_uorg", "ds_gestor"]
+faltando = [c for c in obrigatorias if c not in df.columns]
+assert not faltando, f"Colunas ausentes: {faltando}"
+
+# 3. Grupos existentes (ajustar os nomes conforme sua empresa)
+print(df["ds_grupo"].value_counts())
+
+# 4. Ao menos algumas features numéricas com prefixo correto
+vl_cols = [c for c in df.columns if c.startswith("vl_")]
+print(f"{len(vl_cols)} colunas vl_* encontradas: {vl_cols[:10]}")
+```
 
 ## Como Executar
 
@@ -122,7 +225,7 @@ Os três arquivos de `data/raw/` já estão incluídos no repositório. Todos os
 
 | Etapa | Notebook | Descrição | Saída principal |
 |---|---|---|---|
-| Ingestão & Separação temporal | `01_ingest` | Merge wide × target × rolling stats × ds_grupo; split em tt/val/apl via `fg_sem_output` | `data/gold/base_{tt,val,apl}_raw.parquet` |
+| Ingestão, construção de target e features | `01_ingest` | Carga da mensalizada → target forward-looking (3–12m) → rolling vl_* (3m+6m) → features derivadas → indicadores de grupo → separação temporal (tt/val/apl) | `data/gold/base_{tt,val,apl}_raw.parquet` |
 | Feature engineering | `02_build_dataset_m2` | Binning quintílico (fit em tt), correção de lag 15/15, OHE, MICE — transform-only em val/apl | `data/gold/base_features_{tt,val,apl}.parquet` |
 | Splits + Scaler | `03_splits` | Medoide por grupo, Gower, split 70/30 por ID, StandardScaler fit no treino | `data/processed/splits/{Grupo}/` + `models/{Grupo}/standard_scaler.joblib` |
 | Feature Selection | `04_feature_selection` | 3 camadas: qualidade → RFECV → SHAP pós-treino, por grupo | `data/processed/feature_selection/{Grupo}/selected_features.json` |
@@ -132,6 +235,28 @@ Os três arquivos de `data/raw/` já estão incluídos no repositório. Todos os
 | Score final | `08_score` | Aplica modelo tuned a val + aplicação (Jun–Dez/2025); classifica Alto/Médio/Baixo por ranking | `reports/score_risco_consolidado.parquet/.csv` |
 | ROI | `09_roi` | Projeção de ROI em 3 cenários (conservador/moderado/otimista) | `reports/roi_projecao.parquet/.csv` + 3 figuras |
 | Monitoramento | `10_monitor` | PSI por feature, AUC mensal, Precision A+M, alertas de retreino | `reports/monitor_*.csv` + 4 figuras |
+
+## Resultados dos Modelos
+
+Resultados obtidos na execução dos notebooks 04 (feature selection) e 05 (modelagem) sobre dados fictícios descaracterizados. A separação temporal entre treino/teste e validação é estrita — a validação cobre meses posteriores ao treino, simulando aplicação real.
+
+### Feature Selection (`04_feature_selection`)
+
+| Grupo | Features selecionadas | AUC-ROC (val) |
+|---|---:|---:|
+| Vendas | 70 | 0.744 |
+| Transporte | 69 | 0.718 |
+| Fábrica | 69 | 0.734 |
+
+### Modelagem + Tuning (`05_model` → `06_tuning`)
+
+| Grupo | Algoritmo | AUC-ROC (teste) | AUC-ROC (val) | Recall val (threshold) | Threshold |
+|---|---|---:|---:|---:|---:|
+| Vendas | XGBoost | 0.833 | 0.744 | 71.9% | 0.465 |
+| Transporte | XGBoost | 0.828 | 0.718 | 71.5% | 0.365 |
+| Fábrica | XGBoost | 0.811 | 0.734 | 70.3% | 0.240 |
+
+> **Nota sobre a queda teste → validação:** a redução de performance entre teste e validação temporal é esperada e saudável — indica que o modelo está sendo avaliado de forma honesta, sem vazamento temporal. Modelos avaliados apenas em divisões aleatórias de treino/teste tipicamente reportam AUC 3–7 p.p. superior ao que entregam em produção.
 
 ## Decisões de Modelagem e Negócio
 
@@ -258,11 +383,24 @@ Para cada grupo × mês são calculados 3 indicadores com **janela rolling de 4 
 | Feature | Fórmula | Interpretação |
 |---|---|---|
 | `vl_hc_{grupo}_4m` | média mensal de `fg_ativo == 1` nos 4 meses | Headcount médio do grupo |
-| `vl_tv_vol_{grupo}_4m` | Σ `fg_dem_vol2 == 1` / Σ `fg_ativo == 1` | Taxa de turnover voluntário acumulada |
-| `vl_tv_inv_{grupo}_4m` | Σ `fg_dem_inv2 == 1` / Σ `fg_ativo == 1` | Taxa de turnover involuntário acumulada |
+| `vl_tv_vol_{grupo}_4m` | Σ `fg_dem_vol == 1` / Σ `fg_ativo == 1` | Taxa de turnover voluntário acumulada |
+| `vl_tv_inv_{grupo}_4m` | Σ `fg_dem_inv == 1` / Σ `fg_ativo == 1` | Taxa de turnover involuntário acumulada |
 
-Os indicadores são calculados sobre a **população completa da mensalizada** (não apenas o
-subconjunto amostrado para modelagem), garantindo representatividade real de cada grupo.
+Como `df` já é a mensalizada completa, os indicadores são calculados sobre toda a população — não apenas o subconjunto amostrado para modelagem — garantindo representatividade real de cada grupo.
+
+### Rolling Features por Colaborador (§4 do 01_ingest)
+
+Para cada variável `vl_*` (exceto `vl_conjuge`, `vl_filhos`, `vl_dependentes`), são geradas
+auto-maticamente 8 features de comportamento temporal:
+
+| Sufixo | Janela | Agregação |
+|---|---|---|
+| `_mean_3m` / `_mean_6m` | 3 ou 6 meses | Média do mês atual + anteriores |
+| `_min_3m` / `_min_6m` | 3 ou 6 meses | Mínimo |
+| `_max_3m` / `_max_6m` | 3 ou 6 meses | Máximo |
+| `_std_3m` / `_std_6m` | 3 ou 6 meses | Desvio padrão |
+
+Implementação otimizada: `groupby().rolling()` sobre bloco de colunas de uma vez (C vetorizado), sem loops Python por coluna.
 
 > **Por que funciona?** Captura dinâmicas de equipes ao longo do tempo (ex.: gestores com alta
 > rotatividade histórica → maior risco futuro) sem nunca expor informação futura ao modelo —
@@ -321,17 +459,17 @@ A camada 1 é rápida e remove lixo; a camada 2 reduz multicolinearidade e garan
 
 ---
 
-### Por que LightGBM venceu em 2 dos 3 grupos (Fábrica usou XGBoost)
+### Por que XGBoost venceu nos 3 grupos após tuning
 
-Os 4 modelos avaliados foram Logistic Regression (baseline), Random Forest, XGBoost e LightGBM. O critério de seleção foi Average Precision (AP) na validação. LightGBM foi campeão em Vendas e Transporte; XGBoost foi campeão em Fábrica.
+Os 4 candidatos avaliados foram Logistic Regression (referência), Random Forest, XGBoost e LightGBM. O critério de seleção em `05_model` foi Average Precision (AP) calibrado com `scale_pos_weight` correto (derivado da taxa real de turnover na validação, ~10–12%). No `06_tuning`, todos os grupos convergiram para XGBoost após RandomizedSearchCV sobre o espaço de hiperparâmetros.
 
-LightGBM superou os demais por algumas características do dataset:
+XGBoost se destacou pelas seguintes razões:
 
-- **Variáveis mistas** (numéricas escaladas + ordinais `_bin` encodadas + binárias OHE): o crescimento leaf-wise do LightGBM explora bem espaços de features mistas
-- **Dados esparsas em algumas colunas** (zeros estruturais): o LightGBM lida nativamente com sparsidade via binning adaptativo
-- **Dataset de tamanho médio** (4–10K exemplos de treino por grupo): o LightGBM generaliza bem nesse regime sem requerer a regularização agressiva do XGBoost
+- **`scale_pos_weight` nativo**: o parâmetro de calibração de peso de classe é diretamente interpretável e permite calibrar com precisão a trade-off recall/precision sem heurísticas adicionais
+- **Regularização explícita** (L1/L2 via `reg_alpha`/`reg_lambda`): eficaz em datasets com features ordinais `_bin` e binárias OHE que tendem a multicolinearidade
+- **Interação com `max_depth` e `min_child_weight`**: permite controle fino da profundidade de árvore que ajuda na generalização para colaboradores novos (split por ID)
 
-Após tuning (`06_tuning`), os modelos atingiram AP de 0.82–0.85 no OOF do treino e AUC-ROC de 0.729–0.814 na validação temporal.
+Após tuning, os modelos atingiram AP de 0.77–0.80 no OOF do treino e AUC-ROC de 0.718–0.744 na validação temporal.
 
 ---
 
@@ -341,29 +479,41 @@ Após tuning (`06_tuning`), os modelos atingiram AP de 0.82–0.85 no OOF do tre
 
 | Grupo | AUC-ROC | Precision | Recall |
 |---|---:|---:|---:|
-| Vendas | 0.820 | 0.610 | 0.797 |
-| Transporte | 0.864 | 0.606 | 0.858 |
-| Fábrica | 0.746 | 0.562 | 0.704 |
+| Vendas | 0.833 | 0.677 | 0.686 |
+| Transporte | 0.828 | 0.546 | 0.757 |
+| Fábrica | 0.811 | 0.542 | 0.804 |
 
-**Leitura:** performance no teste holdout — IDs que o modelo nunca viu no treino, mas no mesmo período histórico. Esses são os valores mais otimistas da avaliação; a queda esperada para validação temporal está documentada na seção seguinte.
+**Leitura:** performance no teste holdout — IDs que o modelo nunca viu no treino, mas no mesmo período histórico. Esses são os valores mais otimistas da avaliação; a queda esperada para validação temporal (dados futuros reais) está documentada na seção seguinte.
 
 ### Performance na validação temporal (Jun–Ago/2025 — dados reais, não vistos no treino)
 
-| Grupo | AUC-ROC | Precision A+M | Recall A+M | % Alertados (Alto+Médio) |
-|---|---:|---:|---:|---:|
-| Vendas | 0.748 | 0.316 | 0.584 | 26.9% |
-| Transporte | 0.814 | 0.309 | 0.706 | 28.6% |
-| Fábrica | 0.729 | 0.304 | 0.604 | 30.9% |
+> Avaliação pelo método M2 (ranking percentual por grupo × mês). Executado em `10_monitor` com rótulos reais disponíveis.
 
-**Leitura:** para cada 10 colaboradores classificados como Alto ou Médio, 3.0–3.2 realmente são demissões voluntárias nos próximos 4 meses. O modelo captura ~58–71% das demissões reais.
+| Grupo | AUC-ROC | Precision A+M | Recall A+M | % Alertados A+M | Baseline¹ | Uplift |
+|---|---:|---:|---:|---:|---:|---:|
+| Vendas | 0.744 | **25.2%** | 56.1% | 25.9% | 11.7% | **2.15×** |
+| Transporte | 0.718 | **21.2%** | 46.5% | 21.6% | 9.8% | **2.16×** |
+| Fábrica | 0.734 | **18.4%** | 51.7% | 26.4% | 9.4% | **1.96×** |
 
-### Projeção de ROI (base fictícia — simplificação; ver nota abaixo)
+¹ *Baseline = seleção aleatória da mesma proporção de colaboradores (= taxa real de turnover na validação).*
 
-| Cenário | Taxa de retenção | Estimativa de ROI |
-|---|---|---|
-| Conservador | 20% dos verdadeiros em risco retidos | R$ 4.0 mi |
-| Moderado | 35% dos verdadeiros em risco retidos | R$ 7.0 mi |
-| Otimista | 50% dos verdadeiros em risco retidos | R$ 9.9 mi |
+**Por que esses resultados são sólidos para o problema de negócio:**
+
+- **Uplift 2× na precisão:** ao usar a lista do modelo em vez de selecionar aleatoriamente, o RH direciona esforços de retenção para uma população com o dobro da concentração de risco real. Com recursos escassos (conversas de retenção, ajustes salariais, realocações), essa diferença é diretamente operacional.
+- **Validação temporal estrita:** os meses Jun–Ago/2025 são inteiramente posteriores ao treino — nenhum colaborador do período de validação estava disponível durante a construção do modelo. Esse regime de avaliação é o que ocorre em produção e é significativamente mais rigoroso do que splits aleatórios.
+- **Horizonte de 4 meses:** a predição antecipa o comportamento com 4 meses de antecedência, não 1 mês — quanto maior o horizonte preditivo, mais difícil o problema. Modelos reportados em literatura com horizontes de 1–2 meses em splits aleatórios são diretamente incomparáveis.
+- **AUC 0.718–0.744 em dados futuros:** supera o limiar operacional (AUC > 0.65) em todos os grupos com margem confortável. A equivalência é: um recrutador que usa a lista do modelo toma a decisão certa (identificar saída real) 72–74% das vezes — versus 50% se escolhesse aleatoriamente.
+- **Comparação interna (teste vs. validação):** a queda de AUC entre teste (0.811–0.833) e validação temporal (0.718–0.744) é de 7–9 p.p. — dentro da faixa típica para problemas de RH com separação temporal estrita, e inferior ao que se observa em modelos não calibrados para imbalance.
+
+### Projeção de ROI — aplicação Set–Dez/2025 (4 meses)
+
+> Custo de reposição: 4× salário mensal (simplificação — substituir por levantamento interno). Período: Set–Dez/2025.
+
+| Cenário | Taxa de retenção | Colaboradores retidos | Economia estimada |
+|---|---|---:|---:|
+| Conservador | 20% dos verdadeiros em risco retidos | 336 | R$ 2,51 mi |
+| Moderado | 35% dos verdadeiros em risco retidos | 587 | R$ 4,38 mi |
+| Otimista | 50% dos verdadeiros em risco retidos | 840 | R$ 6,27 mi |
 
 ---
 
@@ -373,18 +523,19 @@ As features com maior importância média absoluta de SHAP, por grupo:
 
 | Rank | Vendas | Transporte | Fábrica |
 |---|---|---|---|
-| 1 | `vl_dias_menos_6_horas_med_3m` | `vl_horas_extras_horas_med_3m` | `vl_tempo_promocao` |
-| 2 | `vl_tempo_empresa` | `vl_dias_menos_6_horas_med_3m` | `vl_idade` |
-| 3 | `vl_falta_horas_med_6m_bin` | `vl_atraso_horas_med_6m_bin` | `vl_atraso_horas_med_6m` |
-| 4 | `vl_adc_not_dias_med_3m` | `vl_falta_horas_med_6m_bin` | `vl_adicional_noturno_dias_med_6m` |
-| 5 | `vl_tv_vol_cargo_4m` | `vl_tempo_promocao` | `vl_positivo_banco_horas_med_3m` |
+| 1 | `vl_dias_menos_6_horas_max_6m_bin` | `vl_idade` | `vl_dias_noturno_std_6m` |
+| 2 | `vl_remuneracao_variavel_max_3m` | `vl_dias_menos_6_horas` | `vl_saldo_banco_horas_med_3m_std_3m` |
+| 3 | `vl_idade` | `vl_filhos` | `vl_idade` |
+| 4 | `vl_filhos` | `vl_tempo_empresa` | `vl_filhos` |
+| 5 | `vl_dias_menos_6_horas` | `vl_dias_menos_6_horas_std_6m` | `vl_dias_menos_6_horas_mean_6m` |
 
 **Interpretação:**
-- `vl_dias_menos_6_horas_med_3m` — média de dias com jornada abaixo de 6h nos últimos 3 meses: sinal consistente de desengajamento antes da saída em Vendas e Transporte
-- `vl_tempo_empresa` / `vl_tempo_promocao` / `qt_tempo_funcao` — variáveis de senioridade e histórico de progressão: colaboradores muito novos ou sem promoção recente têm maior risco
-- `vl_falta_horas_med_6m_bin` — padrão de faltas: indicador clássico de desengajamento, capturado pelo modelo como discriminativo mesmo em formato discretizado
-- `vl_atraso_horas_med_6m` (Fábrica) / `vl_atraso_horas_med_6m_bin` (Transporte) — horas de atraso acumuladas: sinal de baixo engajamento e desalinhamento crescente com a rotina de trabalho
-- `vl_adicional_noturno_dias_med_6m` / `vl_positivo_banco_horas_med_3m` (Fábrica) — indicadores de carga de trabalho no regime de turno: pressores operacionais característicos da população industrial
+- `vl_dias_menos_6_horas_max_6m_bin` / `vl_dias_menos_6_horas` — pico e tendência de dias com jornada abaixo de 6h: sinal de desengajamento progressivo, presente como feature top em todos os 3 grupos
+- `vl_remuneracao_variavel_max_3m` (Vendas) — variabilidade da remuneração variável recente: queda de comissões/bônus é precursora consistente de saída em áreas comerciais
+- `vl_idade` — presente no top-3 dos 3 grupos: faixas etárias extremas (muito jovens + senior próximo a aposentadoria) têm risco distinto
+- `vl_filhos` — dependentes como ancoragem ao emprego atual: colaboradores sem filhos têm mobilidade relativa maior
+- `vl_dias_noturno_std_6m` / `vl_saldo_banco_horas_med_3m_std_3m` (Fábrica) — variabilidade da escala e do banco de horas: instabilidade de turno é estressor operacional característico do grupo industrial
+- `vl_tempo_empresa` (Transporte) — senioridade como fator de risco: colaboradores muito novos ou em ciclos de transição têm risco elevado
 
 ---
 
@@ -403,7 +554,7 @@ O notebook `10_monitor` foi projetado para execução mensal, após cada ciclo d
 2. Desvio de Precision A+M > 5pp da referência
 3. PSI ≥ 0.20 em qualquer feature top-10
 
-**Estado atual (Abril/2026):** todos os grupos apresentam alertas de PSI crítico em `vl_tempo_promocao`, `vl_tv_vol_cargo_4m` e `vl_falta_dias_med_3m_y`. A performance de modelo ainda está acima dos limiares (AUC 0.729–0.814). Recomendado retreino se o padrão persistir no próximo ciclo.
+**Estado atual (Maio/2026):** todos os grupos apresentam alertas de PSI crítico em pelo menos uma feature — `vl_horas_extras_extraordinarias_horas` e `vl_horas_trabalhadas_std_3m` em Vendas; `vl_falta_dias_max_6m_bin` e `vl_tv_vol_uorg_4m` em Transporte; `vl_saldo_banco_horas_med_3m_std_3m` em Fábrica. A performance de AUC ainda está acima do limiar mínimo (0.65) em todos os grupos (0.718–0.744). Fábrica e Transporte apresentam leve degradação de Precision A+M em relação à referência de validação. **Recomendado retreino no próximo ciclo** se o padrão de drift persistir.
 
 ---
 
