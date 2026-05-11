@@ -1,72 +1,111 @@
-=== Fábrica — Camada 1 — Features Removidas (2026-05-05 14:58)
+=== Fábrica — Camada 1 — Features Removidas (2026-05-11 12:37)
 
-[Variância zero — 4]
+[Variância zero — 22]
   ds_agrupamento_Operação - Fábrica
   ds_agrupamento_Operação - Transporte
   ds_agrupamento_Operação - Vendas
   ds_segmento_Operação
+  vl_remuneracao_variavel
+  vl_remuneracao_variavel_bin
+  vl_remuneracao_variavel_max_3m
+  vl_remuneracao_variavel_max_3m_bin
+  vl_remuneracao_variavel_max_6m
+  vl_remuneracao_variavel_max_6m_bin
+  vl_remuneracao_variavel_mean_3m
+  vl_remuneracao_variavel_mean_3m_bin
+  vl_remuneracao_variavel_mean_6m
+  vl_remuneracao_variavel_mean_6m_bin
+  vl_remuneracao_variavel_min_3m
+  vl_remuneracao_variavel_min_3m_bin
+  vl_remuneracao_variavel_min_6m
+  vl_remuneracao_variavel_min_6m_bin
+  vl_remuneracao_variavel_std_3m
+  vl_remuneracao_variavel_std_3m_bin
+  vl_remuneracao_variavel_std_6m
+  vl_remuneracao_variavel_std_6m_bin
 
 [Missing > 20% — 0]
 
 [Alta correlação (>0.85) — 468]
   ds_genero_M
+  ds_pcd_detalhe_Sim
+  vl_abs_dias_sum_12m_bin
+  vl_abs_dias_sum_12m_max_3m
+  vl_abs_dias_sum_12m_max_3m_bin
   vl_abs_dias_sum_12m_max_6m
   vl_abs_dias_sum_12m_max_6m_bin
   vl_abs_dias_sum_12m_mean_3m
   vl_abs_dias_sum_12m_mean_3m_bin
-  vl_abs_dias_sum_12m_mean_6m_bin
-  vl_abs_dias_sum_12m_min_6m
+  vl_abs_dias_sum_12m_mean_6m
+  vl_abs_dias_sum_12m_min_3m
+  vl_abs_dias_sum_12m_min_3m_bin
   vl_abs_dias_sum_12m_min_6m_bin
+  vl_abs_dias_sum_12m_std_3m_bin
+  vl_abs_dias_sum_12m_std_6m_bin
+  vl_abs_dias_sum_3m_bin
+  vl_abs_dias_sum_3m_max_3m
   vl_abs_dias_sum_3m_max_6m
   vl_abs_dias_sum_3m_max_6m_bin
   vl_abs_dias_sum_3m_mean_3m
   vl_abs_dias_sum_3m_mean_3m_bin
   vl_abs_dias_sum_3m_mean_6m_bin
-  vl_abs_dias_sum_3m_std_3m
+  vl_abs_dias_sum_3m_min_3m_bin
+  vl_abs_dias_sum_3m_min_6m_bin
+  vl_abs_dias_sum_3m_std_3m_bin
+  vl_abs_dias_sum_3m_std_6m_bin
+  vl_abs_dias_sum_6m
+  vl_abs_dias_sum_6m_bin
+  vl_abs_dias_sum_6m_max_3m
   vl_abs_dias_sum_6m_max_6m
   vl_abs_dias_sum_6m_max_6m_bin
   vl_abs_dias_sum_6m_mean_3m
   vl_abs_dias_sum_6m_mean_3m_bin
+  vl_abs_dias_sum_6m_mean_6m
   vl_abs_dias_sum_6m_mean_6m_bin
   vl_abs_dias_sum_6m_min_3m
+  vl_abs_dias_sum_6m_min_6m_bin
+  vl_abs_dias_sum_6m_std_3m_bin
+  vl_abs_dias_sum_6m_std_6m_bin
   vl_adicional_noturno_dias_bin
   vl_adicional_noturno_dias_max_6m
-  vl_adicional_noturno_dias_mean_3m
+  vl_adicional_noturno_dias_mean_3m_bin
   vl_adicional_noturno_dias_mean_6m
-  vl_adicional_noturno_dias_mean_6m_bin
-  vl_adicional_noturno_dias_min_3m_bin
-  vl_adicional_noturno_dias_min_6m
+  vl_adicional_noturno_dias_min_3m
+  vl_adicional_noturno_dias_min_6m_bin
   vl_adicional_noturno_dias_std_3m_bin
   vl_adicional_noturno_dias_std_6m_bin
   vl_adicional_noturno_horas_bin
   vl_adicional_noturno_horas_max_3m_bin
   vl_adicional_noturno_horas_max_6m_bin
-  vl_adicional_noturno_horas_mean_3m
-  vl_adicional_noturno_horas_mean_6m_bin
-  vl_adicional_noturno_horas_min_3m
+  vl_adicional_noturno_horas_mean_3m_bin
+  vl_adicional_noturno_horas_mean_6m
   vl_adicional_noturno_horas_min_3m_bin
   vl_adicional_noturno_horas_min_6m
   vl_adicional_noturno_horas_min_6m_bin
   vl_adicional_noturno_horas_std_3m_bin
   vl_adicional_noturno_horas_std_6m_bin
-  vl_atraso_dias_bin
+  vl_atraso_dias
+  vl_atraso_dias_max_3m
   vl_atraso_dias_max_3m_bin
-  vl_atraso_dias_max_6m
+  vl_atraso_dias_max_6m_bin
   vl_atraso_dias_mean_3m
+  vl_atraso_dias_mean_3m_bin
   vl_atraso_dias_mean_6m
   vl_atraso_dias_mean_6m_bin
   vl_atraso_dias_min_3m
   vl_atraso_dias_min_3m_bin
+  vl_atraso_dias_min_6m
   vl_atraso_dias_min_6m_bin
   vl_atraso_dias_std_3m
   vl_atraso_dias_std_6m
+  vl_atraso_dias_std_6m_bin
   vl_atraso_horas_max_3m_bin
   vl_atraso_horas_max_6m_bin
-  vl_atraso_horas_mean_3m
-  vl_atraso_horas_mean_6m_bin
+  vl_atraso_horas_mean_3m_bin
+  vl_atraso_horas_mean_6m
   vl_atraso_horas_min_6m
   vl_atraso_horas_std_3m
-  vl_atraso_horas_std_6m
+  vl_atraso_horas_std_6m_bin
   vl_beneficio_extra_10_bin
   vl_beneficio_extra_10_max_3m_bin
   vl_beneficio_extra_10_max_6m_bin
@@ -75,6 +114,7 @@
   vl_beneficio_extra_10_mean_6m_bin
   vl_beneficio_extra_10_min_3m_bin
   vl_beneficio_extra_10_min_6m
+  vl_beneficio_extra_10_min_6m_bin
   vl_beneficio_extra_10_std_3m
   vl_beneficio_extra_10_std_6m_bin
   vl_beneficio_extra_12_bin
@@ -85,6 +125,7 @@
   vl_beneficio_extra_12_mean_6m_bin
   vl_beneficio_extra_12_min_3m_bin
   vl_beneficio_extra_12_min_6m
+  vl_beneficio_extra_12_min_6m_bin
   vl_beneficio_extra_12_std_3m
   vl_beneficio_extra_12_std_6m_bin
   vl_beneficio_extra_13_bin
@@ -92,10 +133,8 @@
   vl_beneficio_extra_13_max_6m_bin
   vl_beneficio_extra_13_mean_3m
   vl_beneficio_extra_13_mean_3m_bin
-  vl_beneficio_extra_13_mean_6m_bin
   vl_beneficio_extra_13_min_3m_bin
   vl_beneficio_extra_13_min_6m
-  vl_beneficio_extra_13_min_6m_bin
   vl_beneficio_extra_13_std_3m
   vl_beneficio_extra_13_std_6m_bin
   vl_beneficio_extra_1_max_3m
@@ -104,10 +143,9 @@
   vl_beneficio_extra_1_mean_3m_bin
   vl_beneficio_extra_1_mean_6m
   vl_beneficio_extra_1_min_3m
-  vl_beneficio_extra_1_min_6m
   vl_beneficio_extra_1_min_6m_bin
-  vl_beneficio_extra_1_std_6m
   vl_beneficio_extra_2_max_3m
+  vl_beneficio_extra_2_max_6m
   vl_beneficio_extra_2_max_6m_bin
   vl_beneficio_extra_2_mean_3m
   vl_beneficio_extra_2_mean_3m_bin
@@ -118,13 +156,11 @@
   vl_beneficio_extra_3_max_6m_bin
   vl_beneficio_extra_3_mean_3m
   vl_beneficio_extra_3_mean_3m_bin
-  vl_beneficio_extra_3_mean_6m_bin
   vl_beneficio_extra_3_min_3m_bin
   vl_beneficio_extra_3_min_6m
   vl_beneficio_extra_3_std_3m
   vl_beneficio_extra_3_std_6m_bin
   vl_beneficio_extra_4_mean_3m
-  vl_beneficio_extra_4_mean_3m_bin
   vl_beneficio_extra_4_min_6m
   vl_beneficio_extra_4_std_6m
   vl_beneficio_extra_5_max_3m
@@ -132,7 +168,8 @@
   vl_beneficio_extra_5_mean_3m
   vl_beneficio_extra_5_mean_3m_bin
   vl_beneficio_extra_5_mean_6m
-  vl_beneficio_extra_5_min_6m
+  vl_beneficio_extra_5_min_3m
+  vl_beneficio_extra_5_min_6m_bin
   vl_beneficio_extra_5_std_6m
   vl_beneficio_tempo_1_max_3m
   vl_beneficio_tempo_1_max_6m
@@ -141,6 +178,7 @@
   vl_beneficio_tempo_1_mean_6m
   vl_beneficio_tempo_1_min_3m
   vl_beneficio_tempo_1_min_6m
+  vl_beneficio_tempo_1_min_6m_bin
   vl_beneficio_tempo_2_max_3m
   vl_beneficio_tempo_2_max_6m
   vl_beneficio_tempo_2_mean_3m
@@ -149,8 +187,8 @@
   vl_beneficio_tempo_2_min_3m
   vl_beneficio_tempo_2_min_6m
   vl_beneficio_tempo_2_min_6m_bin
-  vl_beneficio_tempo_2_std_6m
   vl_dias
+  vl_dias_bin
   vl_dias_diurno_bin
   vl_dias_diurno_max_3m_bin
   vl_dias_diurno_max_6m
@@ -167,29 +205,28 @@
   vl_dias_domingo_mean_3m_bin
   vl_dias_domingo_mean_6m
   vl_dias_domingo_mean_6m_bin
-  vl_dias_domingo_min_6m
   vl_dias_domingo_std_3m_bin
-  vl_dias_domingo_std_6m
+  vl_dias_domingo_std_6m_bin
   vl_dias_mais_8_horas_bin
-  vl_dias_mais_8_horas_max_3m
+  vl_dias_mais_8_horas_max_3m_bin
   vl_dias_mais_8_horas_max_6m
   vl_dias_mais_8_horas_max_6m_bin
   vl_dias_mais_8_horas_mean_3m
   vl_dias_mais_8_horas_mean_3m_bin
   vl_dias_mais_8_horas_mean_6m
   vl_dias_mais_8_horas_mean_6m_bin
+  vl_dias_mais_8_horas_min_3m
   vl_dias_mais_8_horas_min_3m_bin
-  vl_dias_mais_8_horas_min_6m
   vl_dias_mais_8_horas_min_6m_bin
   vl_dias_mais_8_horas_std_3m_bin
   vl_dias_mais_8_horas_std_6m_bin
   vl_dias_max_3m
-  vl_dias_max_3m_bin
   vl_dias_max_6m
   vl_dias_max_6m_bin
   vl_dias_mean_3m
   vl_dias_mean_3m_bin
   vl_dias_mean_6m
+  vl_dias_mean_6m_bin
   vl_dias_menos_6_horas_bin
   vl_dias_menos_6_horas_max_3m_bin
   vl_dias_menos_6_horas_max_6m_bin
@@ -198,29 +235,26 @@
   vl_dias_menos_6_horas_min_3m
   vl_dias_menos_6_horas_min_6m
   vl_dias_menos_6_horas_min_6m_bin
-  vl_dias_menos_6_horas_std_6m_bin
   vl_dias_min_3m
   vl_dias_min_3m_bin
   vl_dias_min_6m
   vl_dias_min_6m_bin
   vl_dias_noturno_bin
   vl_dias_noturno_max_3m
-  vl_dias_noturno_max_6m
+  vl_dias_noturno_max_3m_bin
   vl_dias_noturno_max_6m_bin
   vl_dias_noturno_mean_3m
   vl_dias_noturno_mean_3m_bin
   vl_dias_noturno_mean_6m
   vl_dias_noturno_mean_6m_bin
   vl_dias_noturno_min_3m_bin
-  vl_dias_noturno_min_6m
   vl_dias_noturno_min_6m_bin
   vl_dias_noturno_std_3m_bin
   vl_dias_noturno_std_6m_bin
   vl_dias_sabado_max_6m
-  vl_dias_sabado_mean_3m
+  vl_dias_sabado_mean_3m_bin
   vl_dias_sabado_mean_6m
   vl_dias_sabado_mean_6m_bin
-  vl_dias_sabado_min_6m
   vl_dias_sabado_std_3m_bin
   vl_dias_sabado_std_6m_bin
   vl_dias_std_3m
@@ -230,8 +264,8 @@
   vl_distancia_trabalho_min_bin
   vl_distancia_trabalho_min_max_3m_bin
   vl_distancia_trabalho_min_max_6m_bin
-  vl_distancia_trabalho_min_mean_3m
-  vl_distancia_trabalho_min_mean_6m_bin
+  vl_distancia_trabalho_min_mean_3m_bin
+  vl_distancia_trabalho_min_mean_6m
   vl_distancia_trabalho_min_min_6m
   vl_distancia_trabalho_min_std_3m_bin
   vl_distancia_trabalho_min_std_6m_bin
@@ -242,7 +276,7 @@
   vl_economico_custo_vida_mean_3m
   vl_economico_custo_vida_mean_3m_bin
   vl_economico_custo_vida_mean_6m
-  vl_economico_custo_vida_min_3m
+  vl_economico_custo_vida_min_3m_bin
   vl_economico_custo_vida_min_6m
   vl_economico_custo_vida_min_6m_bin
   vl_economico_custo_vida_std_3m_bin
@@ -266,10 +300,10 @@
   vl_economico_salario_medio_max_3m_bin
   vl_economico_salario_medio_max_6m
   vl_economico_salario_medio_mean_3m
+  vl_economico_salario_medio_mean_3m_bin
   vl_economico_salario_medio_mean_6m
-  vl_economico_salario_medio_mean_6m_bin
-  vl_economico_salario_medio_min_3m
   vl_economico_salario_medio_min_3m_bin
+  vl_economico_salario_medio_min_6m
   vl_economico_salario_medio_min_6m_bin
   vl_economico_salario_medio_std_3m_bin
   vl_economico_salario_medio_std_6m_bin
@@ -289,29 +323,31 @@
   vl_economico_taxa_desemprego_std_3m_bin
   vl_economico_taxa_desemprego_std_6m_bin
   vl_economico_turnover_cnae_regiao_bin
-  vl_economico_turnover_cnae_regiao_max_3m_bin
+  vl_economico_turnover_cnae_regiao_max_3m
   vl_economico_turnover_cnae_regiao_max_6m_bin
   vl_economico_turnover_cnae_regiao_mean_3m
+  vl_economico_turnover_cnae_regiao_mean_3m_bin
   vl_economico_turnover_cnae_regiao_mean_6m_bin
   vl_economico_turnover_cnae_regiao_min_3m_bin
   vl_economico_turnover_cnae_regiao_min_6m_bin
+  vl_economico_turnover_cnae_regiao_std_6m_bin
   vl_falta_dias_bin
   vl_falta_dias_max_3m_bin
   vl_falta_dias_max_6m
   vl_falta_dias_mean_3m
-  vl_falta_dias_mean_6m_bin
-  vl_falta_dias_min_3m
+  vl_falta_dias_mean_3m_bin
   vl_falta_dias_min_6m
   vl_falta_dias_min_6m_bin
+  vl_falta_dias_std_3m
   vl_falta_dias_std_3m_bin
   vl_falta_dias_std_6m
   vl_falta_horas
+  vl_falta_horas_bin
   vl_falta_horas_max_3m
   vl_falta_horas_max_3m_bin
   vl_falta_horas_max_6m
   vl_falta_horas_max_6m_bin
   vl_falta_horas_mean_3m
-  vl_falta_horas_mean_3m_bin
   vl_falta_horas_mean_6m
   vl_falta_horas_mean_6m_bin
   vl_falta_horas_min_3m
@@ -320,7 +356,6 @@
   vl_falta_horas_min_6m_bin
   vl_falta_horas_std_3m
   vl_falta_horas_std_3m_bin
-  vl_falta_horas_std_6m
   vl_falta_horas_std_6m_bin
   vl_hc_cargo_4m_bin
   vl_hc_gestor_4m_bin
@@ -364,9 +399,8 @@
   vl_horas_extras_extraordinarias_horas_bin
   vl_horas_extras_extraordinarias_horas_max_3m_bin
   vl_horas_extras_extraordinarias_horas_max_6m_bin
-  vl_horas_extras_extraordinarias_horas_mean_3m
-  vl_horas_extras_extraordinarias_horas_mean_6m_bin
-  vl_horas_extras_extraordinarias_horas_min_3m
+  vl_horas_extras_extraordinarias_horas_mean_3m_bin
+  vl_horas_extras_extraordinarias_horas_mean_6m
   vl_horas_extras_extraordinarias_horas_min_3m_bin
   vl_horas_extras_extraordinarias_horas_min_6m
   vl_horas_extras_extraordinarias_horas_min_6m_bin
@@ -375,9 +409,8 @@
   vl_horas_extras_horas_bin
   vl_horas_extras_horas_max_3m_bin
   vl_horas_extras_horas_max_6m_bin
-  vl_horas_extras_horas_mean_3m
-  vl_horas_extras_horas_mean_6m_bin
-  vl_horas_extras_horas_min_3m
+  vl_horas_extras_horas_mean_3m_bin
+  vl_horas_extras_horas_mean_6m
   vl_horas_extras_horas_min_3m_bin
   vl_horas_extras_horas_min_6m
   vl_horas_extras_horas_min_6m_bin
@@ -385,7 +418,7 @@
   vl_horas_extras_horas_std_6m_bin
   vl_horas_trabalhadas_max_6m
   vl_horas_trabalhadas_mean_3m_bin
-  vl_horas_trabalhadas_mean_6m_bin
+  vl_horas_trabalhadas_mean_6m
   vl_horas_trabalhadas_min_3m_bin
   vl_horas_trabalhadas_min_6m_bin
   vl_horas_trabalhadas_std_3m_bin
@@ -405,32 +438,15 @@
   vl_idade_min_6m_bin
   vl_idade_std_6m_bin
   vl_perc_diurno
-  vl_positivo_banco_horas_med_3m_max_3m
+  vl_positivo_banco_horas_med_3m_max_6m
   vl_positivo_banco_horas_med_3m_max_6m_bin
   vl_positivo_banco_horas_med_3m_mean_3m
   vl_positivo_banco_horas_med_3m_mean_3m_bin
-  vl_positivo_banco_horas_med_3m_mean_6m
   vl_positivo_banco_horas_med_3m_mean_6m_bin
   vl_positivo_banco_horas_med_3m_min_3m
   vl_positivo_banco_horas_med_3m_min_3m_bin
-  vl_positivo_banco_horas_med_3m_min_6m
+  vl_positivo_banco_horas_med_3m_std_6m
   vl_positivo_banco_horas_med_3m_std_6m_bin
-  vl_remuneracao_variavel_bin
-  vl_remuneracao_variavel_max_3m
-  vl_remuneracao_variavel_max_3m_bin
-  vl_remuneracao_variavel_max_6m
-  vl_remuneracao_variavel_max_6m_bin
-  vl_remuneracao_variavel_mean_3m
-  vl_remuneracao_variavel_mean_3m_bin
-  vl_remuneracao_variavel_mean_6m
-  vl_remuneracao_variavel_mean_6m_bin
-  vl_remuneracao_variavel_min_3m
-  vl_remuneracao_variavel_min_6m
-  vl_remuneracao_variavel_min_6m_bin
-  vl_remuneracao_variavel_std_3m
-  vl_remuneracao_variavel_std_3m_bin
-  vl_remuneracao_variavel_std_6m
-  vl_remuneracao_variavel_std_6m_bin
   vl_salario_max_3m
   vl_salario_max_3m_bin
   vl_salario_max_6m
@@ -444,14 +460,13 @@
   vl_salario_min_6m
   vl_salario_std_3m_bin
   vl_saldo_banco_horas_med_3m_max_3m
+  vl_saldo_banco_horas_med_3m_max_6m
   vl_saldo_banco_horas_med_3m_max_6m_bin
   vl_saldo_banco_horas_med_3m_mean_3m
   vl_saldo_banco_horas_med_3m_mean_3m_bin
   vl_saldo_banco_horas_med_3m_mean_6m
-  vl_saldo_banco_horas_med_3m_mean_6m_bin
   vl_saldo_banco_horas_med_3m_min_3m
   vl_saldo_banco_horas_med_3m_min_6m_bin
-  vl_saldo_banco_horas_med_3m_std_6m_bin
   vl_tempo_empresa_max_3m
   vl_tempo_empresa_max_3m_bin
   vl_tempo_empresa_max_6m
@@ -464,6 +479,7 @@
   vl_tempo_empresa_min_3m_bin
   vl_tempo_empresa_min_6m
   vl_tempo_empresa_min_6m_bin
+  vl_tempo_empresa_std_6m_bin
   vl_tempo_funcao_max_3m
   vl_tempo_funcao_max_3m_bin
   vl_tempo_funcao_max_6m
@@ -477,6 +493,8 @@
   vl_tempo_funcao_min_6m
   vl_tempo_funcao_min_6m_bin
   vl_tv_inv_uorg_4m_bin
+  vl_tv_vol_cargo_4m_bin
+  vl_tv_vol_uorg_4m_bin
 
-Total removidas: 472
-Restantes: 342
+Total removidas: 490
+Restantes: 329

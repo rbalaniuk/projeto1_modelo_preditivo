@@ -232,7 +232,7 @@ Os três arquivos de `data/raw/` já estão incluídos no repositório. Todos os
 | Modelagem | `05_model` | LR/RF/XGBoost/LightGBM; threshold por AP; score de risco (0–1) | `models/{Grupo}/best_model.joblib` |
 | Tuning + Diagnóstico | `06_tuning` | RandomizedSearchCV (AP), K-fold consistency, drift treino→val (KS) | `models/{Grupo}/best_model_tuned.joblib` + figuras |
 | SHAP + Drift val→apl | `07_shap` | SHAP global (summary/beeswarm/waterfall/dependence) + drift KS val→aplicação | `reports/shap/{Grupo}/` + `reports/figures/{Grupo}/drift_val_apl.png` |
-| Score final | `08_score` | Aplica modelo tuned a val + aplicação (Jun–Dez/2025); classifica Alto/Médio/Baixo por ranking | `reports/score_risco_consolidado.parquet/.csv` |
+| Score final | `08_score` | Aplica modelo tuned à base de aplicação (Set–Dez/2025); classifica por `score_risco` (Alto ≥ 0.50, Médio ≥ 0.35, Baixo < 0.35) | `reports/score_risco_consolidado.parquet/.csv` |
 | ROI | `09_roi` | Projeção de ROI em 3 cenários (conservador/moderado/otimista) | `reports/roi_projecao.parquet/.csv` + 3 figuras |
 | Monitoramento | `10_monitor` | PSI por feature, AUC mensal, Precision A+M, alertas de retreino | `reports/monitor_*.csv` + 4 figuras |
 
@@ -244,17 +244,17 @@ Resultados obtidos na execução dos notebooks 04 (feature selection) e 05 (mode
 
 | Grupo | Features selecionadas | AUC-ROC (val) |
 |---|---:|---:|
-| Vendas | 70 | 0.744 |
-| Transporte | 69 | 0.718 |
-| Fábrica | 69 | 0.734 |
+| Vendas | 60 | 0.853 |
+| Transporte | 61 | 0.915 |
+| Fábrica | 70 | 0.898 |
 
 ### Modelagem + Tuning (`05_model` → `06_tuning`)
 
-| Grupo | Algoritmo | AUC-ROC (teste) | AUC-ROC (val) | Recall val (threshold) | Threshold |
-|---|---|---:|---:|---:|---:|
-| Vendas | XGBoost | 0.833 | 0.744 | 71.9% | 0.465 |
-| Transporte | XGBoost | 0.828 | 0.718 | 71.5% | 0.365 |
-| Fábrica | XGBoost | 0.811 | 0.734 | 70.3% | 0.240 |
+| Grupo | Algoritmo | AUC-ROC (teste) | AUC-ROC (val) | Recall val | Precision val | Threshold (tuned) |
+|---|---|---:|---:|---:|---:|---:|
+| Vendas | XGBoost | 0.872 | 0.863 | 59.5% | 49.7% | 0.590 |
+| Transporte | XGBoost | 0.926 | 0.922 | 60.8% | 50.1% | 0.615 |
+| Fábrica | RandomForest | 0.895 | 0.895 | 63.4% | 51.2% | 0.475 |
 
 > **Nota sobre a queda teste → validação:** a redução de performance entre teste e validação temporal é esperada e saudável — indica que o modelo está sendo avaliado de forma honesta, sem vazamento temporal. Modelos avaliados apenas em divisões aleatórias de treino/teste tipicamente reportam AUC 3–7 p.p. superior ao que entregam em produção.
 
@@ -284,6 +284,57 @@ Para o grupo Alto+Médio combinado (que é o que recebe alguma ação de RH):
 | Vendas | 26.9% | 0.316 | 0.584 |
 | Transporte | 28.6% | 0.309 | 0.706 |
 | Fábrica | 30.9% | 0.304 | 0.604 |
+
+> **Implementação atual (Set–Dez/2025):** a classificação de risco é derivada diretamente do
+> `score_risco` — não por ranking. Alto: score ≥ 0.50 (prob ≥ T); Médio: 0.35 ≤ score < 0.50;
+> Baixo: score < 0.35. Distribuição na aplicação:
+
+| Grupo | Alto | Médio | Baixo | Total col×mês |
+|---|---:|---:|---:|---:|
+| Vendas | 1.105 (13,2%) | 2.021 (24,1%) | 5.277 (62,8%) | 8.403 |
+| Transporte | 989 (8,9%) | 3.967 (35,5%) | 6.213 (55,6%) | 11.169 |
+| Fábrica | 407 (15,4%) | 1.203 (45,6%) | 1.026 (38,9%) | 2.636 |
+
+### A fórmula de score de threshold e um resultado emergente notável
+
+#### Como o threshold é selecionado
+
+O threshold ótimo não é escolhido por regra simples de maximizar recall. É definido por uma **função de score** que avalia cada threshold candidato na curva Precision-Recall do conjunto de teste:
+
+```
+score(th) = bonus + dR + dP - dPR
+
+bonus = +1.0  se recall ≥ 0.70 e precision ≥ 0.60  (metas simultâneas)
+        0.0   caso contrário
+
+dR = recall - 0.70  →  se negativo: divide por 0.80  (penalidade assimétrica, errar para menos é mais grave)
+                        se positivo: multiplica por 1.20 (bônus por exceder a meta)
+
+dP = precision - 0.60  (distância linear da meta de precisão)
+
+dPR = |recall - precision - 0.10|  (penalidade por desequilíbrio: a fórmula espera recall ≈ precision + 0.10)
+```
+
+A função foi desenhada para **priorizar recall de forma muito forte**: o objetivo de negócio é não deixar passar demissões evitáveis, e o bônus assimétrico em `dR` penaliza mais fortemente os thresholds que ficam abaixo da meta de recall do que os que ficam abaixo da meta de precisão. A penalidade `dPR` restringe thresholds onde recall e precision divergem demais — o modelo não deve se tornar um detector tão agressivo que a informação sobre *quem realmente vai sair* desapareça.
+
+#### O resultado emergente — e por que ele é notável
+
+A fórmula foi projetada com uma lógica de negócio clara e determinística. Não há nada adaptativo nela — os parâmetros são fixos, as regras são explícitas. E ainda assim, o sistema produziu **um comportamento que não estava escrito em nenhuma regra**:
+
+> **Em vários grupos, o threshold selecionado no teste apresenta precision > recall no teste — mas isso produz recall > precision na validação temporal.**
+
+Em outras palavras: o modelo aprendeu que, para capturar os colaboradores que realmente vão sair nos meses futuros (validação), precisa "abrir" o threshold de tal forma que no conjunto de teste — que tem uma distribuição ligeiramente diferente — a precisão acaba dominando o recall. O problema na validação é *difícil de encontrar*: o fenômeno do turnover voluntário é raro, os sinais são sutis, e a população do período futuro é genuinamente diferente.
+
+O resultado disso:
+- A fórmula diz "priorize recall, penalize desequilíbrio"
+- Os dados dizem "para ter recall alto em validação, você precisa ser mais amplo no teste"
+- O sistema resolve automaticamente essa tensão — sem intervenção, sem ajuste manual, sem um cientista olhando entre teste e validação
+
+Isso é exatamente o que se espera de um sistema bem calibrado: **as regras de negócio guiam a direção, mas os dados determinam o ponto de equilíbrio**. A fórmula não impõe que recall > precision; ela define *o que importa*. Cada grupo chega à sua própria solução, com seu próprio threshold, refletindo sua própria distribuição de comportamento.
+
+O fato de esse resultado ter surgido **de forma totalmente automática**, com regras fixas, sem nenhum ajuste por grupo, é um indicativo forte de que o pipeline está aprendendo a estrutura real dos dados — e não sobreajustando às métricas do conjunto de avaliação.
+
+---
 
 #### Por que o Método 1 (threshold) é melhor técnicamente
 

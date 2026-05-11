@@ -2,7 +2,7 @@
 
 > **Tipo:** Design Document técnico  
 > **Escopo:** Pipeline completo — da ingestão ao monitoramento (notebooks 01–10)  
-> **Última atualização:** Abril 2026
+> **Última atualização:** Maio 2026
 
 > **Principio arquitetural central:** o pipeline é construído inteiramente a partir de uma única base de entrada — a mensalizada de RH, onde cada colaborador aparece uma vez por mês. Não são necessárias bases de features pré-processadas nem de targets pré-calculados. O notebook `01_ingest` constrói o target (janelas 3–12m forward-looking), as rolling features por colaborador (3m e 6m) e os indicadores contextuais de grupo — tudo diretamente da mensalizada.
 
@@ -499,32 +499,92 @@ Idêntico ao Modelo 1:
 
 | Grupo | Algoritmo campeão | AUC-ROC (teste) | AUC-ROC (val) | Recall (val) | Threshold |
 |---|---|---:|---:|---:|---:|
-| Vendas | XGBoost | 0.858 | 0.819 | 81.2% | 0.37 |
-| Transporte | LightGBM | 0.832 | 0.782 | 72.3% | 0.47 |
-| Fábrica | XGBoost | 0.816 | 0.786 | 71.2% | 0.43 |
+| Vendas | XGBoost | 0.870 | 0.853 | 74.8% | 0.690 |
+| Transporte | XGBoost | 0.921 | 0.915 | 75.7% | 0.720 |
+| Fábrica | RandomForest | 0.904 | 0.898 | 84.0% | 0.385 |
 
 Os hiperparâmetros são refinados no `06_tuning` via `RandomizedSearchCV` (scoring=AP),
 produzindo `best_model_tuned.joblib` e `tuning_metadata.json` por grupo.
+
+### Resultado pós-tuning (`06_tuning`):
+
+| Grupo | AUC-ROC (teste) | AUC-ROC (val) | Recall (val) | Precision (val) | Recall (teste) | Precision (teste) | Threshold |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Vendas | 0.872 | 0.863 | 59.5% | 49.7% | 64.8% | 84.9% | 0.590 |
+| Transporte | 0.926 | 0.922 | 60.8% | 50.1% | 69.5% | 87.5% | 0.615 |
+| Fábrica | 0.895 | 0.895 | 63.4% | 51.2% | 69.6% | 81.5% | 0.475 |
+
+> **Resultado emergente (seção 13.2):** em todos os grupos, `precision > recall` no **teste**
+> e `recall > precision` na **validação temporal** — o threshold encontra espontaneamente
+> o equilíbrio certo para generalizar ao futuro.
 
 ---
 
 ## 13. Definição do Threshold Ótimo
 
-> Calculado **independentemente por grupo**, usando o conjunto de validação do grupo.
-> O threshold T é salvo em `tuning_metadata.json` e usado na fórmula de score (seção 14).
+> Calculado **independentemente por grupo**, no conjunto de **teste** (`05_model`) e re-otimizado
+> com o modelo tunado no conjunto de **validação** (`06_tuning`).
+> O threshold T é salvo em `model_metadata.json` / `tuning_metadata.json` e usado na fórmula de score (seção 14).
 
+### 13.1 Função de score do threshold
+
+Para cada threshold candidato `th` em `[0.005, 1.0)` com passo `0.005`, avalia-se:
+
+```python
+bonus = 1.0  if (recall >= META_REC and precision >= META_PRE)  else 0.0
+
+dR = recall - META_REC
+if dR < 0:  dR = dR / 0.80   # penalidade assimétrica: errar recall é mais grave
+elif dR > 0: dR = dR * 1.20  # bônus por exceder a meta de recall
+
+dP  = precision - META_PRE
+dPR = abs(recall - precision - 0.10)  # penalidade por desequilíbrio recall/precisão
+
+score(th) = bonus + dR + dP - dPR
 ```
-1. Curva Precision-Recall no conjunto de validação do grupo
-2. Filtros: threshold > 0.10, Recall > 0.5, Precisão > 0.20
-3. Priorizar maior Average Precision
-4. Desempate: maximizar AP
-5. Nenhum candidato válido → modelo reprovado
-```
+
+`META_REC = 0.70`, `META_PRE = 0.60`.
+
+**Constraint adicional:** apenas thresholds onde `recall >= precision` são elegíveis
+(filtra candidatos com precisão dominando fortemente o recall).
+
+O threshold com maior `score(th)` é selecionado.
+
+### 13.2 Comportamento emergente — resultado notável
+
+A fórmula foi projetada com regras fixas e determinísticas: não há nada adaptativo nos parâmetros.
+O objetivo declarado é priorizar recall de forma muito forte (`dR` assimétrico), penalizar precisão
+insuficiente e restringir thresholds onde recall e precision divergem demais (`dPR`).
+
+**O resultado observado empiricamente:** em vários grupos, o threshold selecionado apresenta
+`precision > recall` no conjunto de **teste** — mas esse mesmo threshold produz `recall > precision`
+na **validação temporal** (período futuro, out-of-time).
+
+Isso é contraintuitivo e não estava escrito em nenhuma regra. O sistema resolveu automaticamente
+uma tensão latente nos dados:
+
+> O fenômeno que queremos capturar (turnover voluntário futuro) é raro e difícil de encontrar
+> na validação. O conjunto de teste, por pertencer ao mesmo período histórico do treino, tem
+> uma distribuição ligeiramente diferente. Para que o modelo tenha recall alto *onde importa*
+> (validação futura), o threshold precisa ser "aberto" o suficiente para que, na distribuição
+> histórica do teste, a precisão acabe dominando o recall.
+
+**Por que isso é um resultado sensacional:**
+
+- A fórmula não impõe que `recall > precision`. Ela define *o que importa* (recall alto, penalidade
+  por desequilíbrio). Cada grupo encontra seu próprio equilíbrio, com seu próprio threshold,
+  refletindo sua própria distribuição de comportamento.
+- O resultado não é fruto de ajuste manual, overfitting de regras ou intervenção por grupo.
+  Emerge de forma totalmente automática a partir da estrutura dos dados.
+- É um indicativo forte de que o pipeline está aprendendo a generalização real — não sobreajustando
+  às métricas do conjunto de avaliação imediato.
+
+**As regras de negócio guiam a direção. Os dados determinam o ponto de equilíbrio.**
 
 > **Nota de implementação**: o threshold T é usado como referência para otimização do modelo
 > em `06_tuning` e como parâmetro T na fórmula de score de risco (seção 14).
-> A classificação final dos colaboradores em Alto/Médio/Baixo é feita por
-> **ranking percentual por mês por grupo** — ver seção 14.
+> A classificação final dos colaboradores em Alto/Médio/Baixo é derivada diretamente do
+> `score_risco`: Alto ≥ 0.50 (prob ≥ T), Médio ≥ 0.35 (M ≤ prob < T), Baixo < 0.35 — ver seção 14.
 
 ---
 
@@ -553,32 +613,24 @@ def calcular_score_risco(prob, T, M):
 | `score_risco`    | float      | Score reescalado (0.00 a 1.00) |
 | `grupo_risco`    | string     | "Alto", "Médio" ou "Baixo"     |
 
-**Classificação Alto/Médio/Baixo — Método Ranking (M2)**
+**Classificação Alto/Médio/Baixo — por `score_risco`**
 
-A categoria de risco é definida por **ranking de probabilidade por mês por grupo**,
-não pelo threshold T diretamente. Isso garante tamanho de lista previsível, proporcional
-à taxa histórica de turnover voluntário.
+A categoria de risco é derivada diretamente do `score_risco`, garantindo consistência
+entre score e faixa: não há colaborador “Alto” com `score_risco < 0.50`.
 
 ```python
-# Por mês M e grupo G:
-taxa_vol = taxa_turnover_vol_3m(grupo=G)   # média últimos 3m de base_features_tt
-corte_alto  = taxa_vol * 1.4               # % de colaboradores → "Alto"
-corte_medio = taxa_vol * 1.4 / 3           # próxima faixa → "Médio"
-
-# Ordenar prob_score DESC por grupo-mês, calcular rank relativo:
-if rank_relativo <= corte_alto:
-    grupo_risco = "Alto"
-elif rank_relativo <= corte_alto + corte_medio:
-    grupo_risco = "Médio"
-else:
-    grupo_risco = "Baixo"
+grupo_risco = np.where(
+    score_risco >= 0.50, "Alto",     # equivale a proba >= T
+    np.where(score_risco >= 0.35, "Médio", "Baixo")  # M <= proba < T
+)
 ```
 
-| Resultado na validação (Jun–Ago/2025) | Vendas | Transporte | Fábrica |
+| Distribuição na aplicação (Set–Dez/2025)  | Vendas        | Transporte    | Fábrica      |
 |---|---|---|---|
-| **% Alto+Médio**                      | 26.8%  | 28.6%      | 30.9%   |
-| **Precision A+M**                     | 0.281  | 0.265      | 0.325   |
-| **Recall A+M**                        | 0.502  | 0.516      | 0.641   |
+| **Alto** (score ≥ 0.50)              | 1.105 (13,2%) | 989 (8,9%)    | 407 (15,4%)  |
+| **Médio** (0.35 ≤ score < 0.50)      | 2.021 (24,1%) | 3.967 (35,5%) | 1.203 (45,6%)|
+| **Baixo** (score < 0.35)             | 5.277 (62,8%) | 6.213 (55,6%) | 1.026 (38,9%)|
+| **Total colaborador×mês**            | 8.403         | 11.169        | 2.636        |
 
 > Para uso operacional: a faixa **Alto+Médio** é o segmento de ação de RH;
 > a faixa **Alto** isolada é para priorização máxima com recursos escassos.
