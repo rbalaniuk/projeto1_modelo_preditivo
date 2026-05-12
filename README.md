@@ -45,7 +45,7 @@ Este projeto foi estruturado para garantir uma avaliação honesta: treino, test
 │   └── 10_monitor.ipynb             # PSI, performance mensal, alertas de retreino
 │
 ├── data/                            # ⛔ Não versionado (.gitignore)
-│   ├── raw/                         # mensalizada_ficticio.parquet (única base de entrada)
+│   ├── raw/                         # painel_colaboradores_ficticio.parquet (única base de entrada)
 │   ├── gold/                        # base_tt_raw · base_val_raw · base_apl_raw
 │   │                                # base_features_tt · base_features_val · base_features_apl
 │   └── processed/
@@ -78,7 +78,7 @@ O pipeline produz versões progressivas da base, cada uma com papel distinto no 
 
 | Camada | Arquivo(s) | Produzido em | Descrição |
 |---|---|---|---|
-| **0 · Entrada** | `data/raw/mensalizada_ficticio.parquet` | — | **Base única** — 1 linha por colaborador × mês; contém flags de demissão, variáveis `vl_*` e metadados |
+| **0 · Entrada** | `data/raw/painel_colaboradores_ficticio.parquet` | — | **Base única** — 1 linha por colaborador × mês; contém flags de demissão, variáveis `vl_*` e metadados |
 | **1 · Bases raw** | `data/gold/base_{tt,val,apl}_raw.parquet` | `01_ingest` | Após construção do target (3–12m) + rolling features (3m/6m) + indicadores de grupo + separação temporal |
 | **2 · Features** | `data/gold/base_features_{tt,val,apl}.parquet` | `02_build` | Binning quintílico + OHE + MICE fit em base_tt; transform-only em val/apl |
 | **3 · Splits** | `data/processed/splits/{Grupo}/` | `03_splits` | Medoide + Gower + split por ID + StandardScaler — treino/teste/val por grupo |
@@ -92,7 +92,7 @@ Para executar o projeto, coloque o arquivo abaixo em `data/raw/`:
 
 | Arquivo | Descrição |
 |---|---|
-| `mensalizada_ficticio.parquet` | **Única base de entrada** — 1 linha por colaborador × mês |
+| `painel_colaboradores_ficticio.parquet` | **Única base de entrada** — 1 linha por colaborador × mês |
 
 O arquivo já está incluído no repositório. Todos os demais arquivos intermediários (`data/gold/`, `data/processed/`) são gerados pelo pipeline ao rodar os notebooks em sequência.
 

@@ -32,9 +32,9 @@ da sua população, em vez de ser influenciado pelo ruído cruzado entre grupos.
 
 ```
 construcao_base_ficticio
-              → INJECT-TAIL em mensalizada_ficticio (sinais brutos amplificados)
+              → INJECT-TAIL em painel_colaboradores_ficticio (sinais brutos amplificados)
               → IMPL-9b: injeta demitidos sintéticos até CUTOFF_INJECT (Ago/2025)
-              → mensalizada_ficticio.parquet  (Única base de entrada do pipeline)
+              → painel_colaboradores_ficticio.parquet  (Única base de entrada do pipeline)
 
 01_ingest     → [carga da mensalizada]
               → [construção do target: fg_demitido_voluntario_{3..12}m via forward-rolling]
@@ -119,12 +119,12 @@ A flag `fg_sem_output = 1` identifica esses registros e impede que sejam:
 
 O `INJECT-TAIL` é aplicado **em `construcao_base_ficticio`**, antes de `IMPL-9b`.
 Ele amplifica sinais comportamentais brutos (faltas, atrasos, advertências) nos
-registros da `mensalizada_ficticio` dos demitidos voluntários **naturais**.
+registros da `painel_colaboradores_ficticio` dos demitidos voluntários **naturais**.
 
 O `IMPL-9b` só injeta demitidos nos meses ≤ `CUTOFF_INJECT` (Ago/2025), garantindo
 que todos os meses injetados tenham janela de 4 meses completamente dentro da base.
 
-Apenas a `mensalizada_ficticio.parquet` é construída aqui e entregue ao pipeline.
+Apenas a `painel_colaboradores_ficticio.parquet` é construída aqui e entregue ao pipeline.
 Não há `temporal_output_ficticio` nem `input_wide_ficticio` gerados — o `01_ingest`
 constrói o target e as features diretamente da mensalizada.
 
